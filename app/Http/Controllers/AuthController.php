@@ -293,7 +293,7 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function Login(Request $request)
     {
         try {
             $validator = Validator::make(
@@ -319,14 +319,22 @@ class AuthController extends Controller
                 Auth::attempt(['phone' => $request->credential, 'password' => $request->password])
             ) {
                 $user = Auth::user();
-                $token = JWTAuth::fromUser($user);
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'login successful!',
-                    'user_id' => $user->id,
-                    'user_role' => $user->role,
-                    'token' => $token
-                ], 200);
+                if ($user->status === status::ACTIVE) {
+                    $token = JWTAuth::fromUser($user);
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'login successful!',
+                        'user_id' => $user->id,
+                        'user_role' => $user->role,
+                        'token' => $token
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => 'your account is ' . $user->status . '! try again later',
+                        'error' => 'login failed!',
+                    ], 403);
+                }
             }
             return response()->json([
                 'status' => 'failed',
