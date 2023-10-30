@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api'])->group(function () {
@@ -21,4 +22,5 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
 
 Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT])->group(function () {
     Route::post('/create-schedule', [ScheduleController::class, 'createSchedule']);
+    Route::post('/create-visiting-hour', [VisitingHourController::class, 'createVisitingHour']);
 });
