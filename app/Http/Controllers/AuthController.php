@@ -15,18 +15,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Helpers\ExceptionHandler;
 
 class AuthController extends Controller
 {
     // administrator & doctor registration
-    public function Registration(Request $request)
+    public function registration(Request $request)
     {
         try {
             $validator = Validator::make(
                 $request->all(),
                 [
                     'name' => 'required|min:3|max:40',
-                    'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+                    'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
                     'email' => 'required|email',
                     'role' => [
                         'required',
@@ -56,6 +57,8 @@ class AuthController extends Controller
                     'name.max' => 'name must be less than 40 characters!',
                     'phone.required' => 'phone is required!',
                     'phone.regex' => 'invalid phone number!',
+                    'phone.min' => 'invalid phone number!',
+                    'phone.max' => 'invalid phone number!',
                     'email.required' => 'email is required!',
                     'email.email' => 'invalid email address!',
                     'role.required' => 'role is required!',
@@ -139,24 +142,19 @@ class AuthController extends Controller
                     'message' => 'registration successful! wait for approval!',
                 ], 202);
             }
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'internal server error',
-                'error' => $error->getMessage(),
-            ], 500);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
         }
     }
 
-    // assistant registration
-    public function AssistantRegistration(Request $request)
+    public function assistantRegistration(Request $request)
     {
         try {
             $validator = Validator::make(
                 $request->all(),
                 [
                     'name' => 'required|min:3|max:40',
-                    'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+                    'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
                     'email' => 'required|email',
                     'role' => [
                         'required',
@@ -187,6 +185,8 @@ class AuthController extends Controller
                     'name.max' => 'name must be less than 40 characters!',
                     'phone.required' => 'phone is required!',
                     'phone.regex' => 'invalid phone number!',
+                    'phone.min' => 'invalid phone number!',
+                    'phone.max' => 'invalid phone number!',
                     'email.required' => 'email is required!',
                     'email.email' => 'invalid email address!',
                     'role.required' => 'role is required!',
@@ -284,16 +284,12 @@ class AuthController extends Controller
                     ], 202);
                 }
             }
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'internal server error!',
-                'error' => $error->getMessage(),
-            ], 500);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
         }
     }
 
-    public function Login(Request $request)
+    public function login(Request $request)
     {
         try {
             $validator = Validator::make(
@@ -331,7 +327,7 @@ class AuthController extends Controller
                 } else {
                     return response()->json([
                         'status' => 'failed',
-                        'message' => 'your account is ' . $user->status . '! try again later',
+                        'message' => 'your account is ' . $user->status . '! try again later!',
                         'error' => 'login failed!',
                     ], 403);
                 }
@@ -342,11 +338,7 @@ class AuthController extends Controller
                 'error' => 'login failed!',
             ], 401);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'internal server error!',
-                'error' => $e->getMessage(),
-            ], 500);
+            return ExceptionHandler::handleException($e);
         }
     }
 }

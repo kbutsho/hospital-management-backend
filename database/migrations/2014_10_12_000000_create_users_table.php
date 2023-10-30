@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('phone')->unique();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->enum('role', [
                 role::ADMINISTRATOR,
                 role::DOCTOR,
@@ -29,7 +29,7 @@ return new class extends Migration
                 status::PENDING,
                 status::DISABLE,
             ]);
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

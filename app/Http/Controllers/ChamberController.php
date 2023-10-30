@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ExceptionHandler;
 use App\Helpers\status;
-use App\Helpers\userRole;
 use App\Models\Chamber;
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ChamberController extends Controller
@@ -34,8 +34,11 @@ class ChamberController extends Controller
             }
 
             $user = JWTAuth::parseToken()->authenticate();
+            $doctor = Doctor::where('user_id', $user->id)->first();
             $isExist = Chamber::where('location', $request->location)
-                ->where('doctor_id', $user->id)->first();
+                ->where('user_id', $user->id)
+                ->where('doctor_id', $doctor->id)
+                ->first();
             if ($isExist) {
                 return response()->json([
                     'status' => 'success',
@@ -46,7 +49,8 @@ class ChamberController extends Controller
             $chamber = new Chamber();
             $chamber->location = $request->location;
             $chamber->status = status::PENDING;
-            $chamber->doctor_id = $user->id;
+            $chamber->user_id = $user->id;
+            $chamber->doctor_id = $doctor->id;
             $chamber->save();
 
             return response()->json([
@@ -55,11 +59,7 @@ class ChamberController extends Controller
                 'data' => $chamber
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'internal server error!',
-                'error' => $e->getMessage(),
-            ], 500);
+            return ExceptionHandler::handleException($e);
         }
     }
 }

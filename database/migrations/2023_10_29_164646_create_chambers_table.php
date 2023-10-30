@@ -21,6 +21,7 @@ return new class extends Migration
                 status::PENDING,
                 status::DISABLE,
             ]);
+            $table->integer('user_id');
             $table->integer('doctor_id');
             $table->timestamps();
             $table->softDeletes();
