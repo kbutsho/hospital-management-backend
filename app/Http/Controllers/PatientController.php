@@ -32,7 +32,7 @@ class PatientController extends Controller
                 return response()->json([
                     'status' => 'failed!',
                     'message' => 'phone already used!',
-                    'error' => 'registration failed!',
+                    'error' => 'patient not registered!',
                 ], 409);
             }
             // create new user
@@ -47,6 +47,7 @@ class PatientController extends Controller
             $patient->name = $request->name;
             $patient->address = $request->address;
             $patient->age = intval($request->age);
+            $patient->gender = $request->gender;
             $patient->save();
             $patientData = [
                 'user_id' => $user->id,
@@ -54,6 +55,7 @@ class PatientController extends Controller
                 'name' => $patient->name,
                 'address' => $patient->address,
                 'age' => $patient->age,
+                'gender' => $patient->age,
                 'phone' => $user->phone,
             ];
             return response()->json([

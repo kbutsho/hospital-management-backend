@@ -13,7 +13,7 @@ class PatientValidation
             'name' => 'required|min:3|max:40',
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'age' => 'required|integer',
-            'gender' => 'required|integer',
+            'gender' => 'required',
             'address' => 'required|string',
         ];
         $this->createPatientMessages = [
@@ -26,6 +26,7 @@ class PatientValidation
             'phone.max' => 'invalid phone number!',
             'age.required' => 'age is required!',
             'age.integer' => 'invalid age formate!',
+            'gender.required' => 'gender is required!',
             'address.required' => 'address is required!',
             'address.string' => 'invalid address formate!'
         ];
