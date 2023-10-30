@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class role
+class ROLE
 {
     const ADMINISTRATOR = 'administrator';
     const DOCTOR = 'doctor';

@@ -1,7 +1,7 @@
 <?php
 
-use App\Helpers\role;
-use App\Helpers\status;
+use App\Helpers\ROLE;
+use App\Helpers\STATUS;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,16 +18,16 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('email')->unique()->nullable();
             $table->enum('role', [
-                role::ADMINISTRATOR,
-                role::DOCTOR,
-                role::PATIENT,
-                role::ASSISTANT,
+                ROLE::ADMINISTRATOR,
+                ROLE::DOCTOR,
+                ROLE::PATIENT,
+                ROLE::ASSISTANT,
             ]);
             $table->enum('status', [
-                status::ACTIVE,
-                status::IN_ACTIVE,
-                status::PENDING,
-                status::DISABLE,
+                STATUS::ACTIVE,
+                STATUS::IN_ACTIVE,
+                STATUS::PENDING,
+                STATUS::DISABLE,
             ]);
             $table->string('password')->nullable();
             $table->timestamps();

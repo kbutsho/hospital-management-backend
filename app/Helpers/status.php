@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class status
+class STATUS
 {
     const ACTIVE = 'active';
     const IN_ACTIVE = 'in-active';

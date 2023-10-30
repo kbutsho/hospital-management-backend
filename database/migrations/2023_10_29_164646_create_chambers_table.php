@@ -16,10 +16,10 @@ return new class extends Migration
             $table->id();
             $table->text('location');
             $table->enum('status', [
-                status::ACTIVE,
-                status::IN_ACTIVE,
-                status::PENDING,
-                status::DISABLE,
+                STATUS::ACTIVE,
+                STATUS::IN_ACTIVE,
+                STATUS::PENDING,
+                STATUS::DISABLE,
             ]);
             $table->integer('user_id');
             $table->integer('doctor_id');

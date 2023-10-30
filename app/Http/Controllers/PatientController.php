@@ -5,45 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ExceptionHandler;
-use App\Helpers\role;
-use App\Helpers\status;
+use App\Helpers\ROLE;
+use App\Helpers\STATUS;
+use App\Helpers\ValidationHandler;
 use App\Models\Patient;
 use App\Models\User;
+use App\Validations\PatientValidation;
 
 class PatientController extends Controller
 {
     public function createPatient(Request $request)
     {
         try {
-            $validator = Validator::make(
-                $request->all(),
-                [
-                    'name' => 'required|min:3|max:40',
-                    'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
-                    'age' => 'required',
-                    'address' => 'required|string',
-                ],
-                [
-                    'name.required' => 'name is required!',
-                    'name.min' => 'name must be more than 2 characters!',
-                    'name.max' => 'name must be less than 40 characters!',
-                    'phone.required' => 'phone is required!',
-                    'phone.regex' => 'invalid phone number!',
-                    'phone.min' => 'invalid phone number!',
-                    'phone.max' => 'invalid phone number!',
-                    'age.required' => 'age is required!',
-                    //'age.integer' => 'invalid age formate!',
-                    'address.required' => 'address is required!',
-                    'address.string' => 'invalid address formate!'
-                ]
-            );
+            // start validation
+            $validation = new PatientValidation();
+            $rules = $validation->createPatientRules;
+            $messages = $validation->createPatientMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                return response()->json([
-                    'status' => 'failed!',
-                    'message' => 'validation error!',
-                    'error' => $validator->errors(),
-                ], 422);
+                return ValidationHandler::handleValidation($validator);
             }
+            //end validation
+            // check phone already exist or not
             $isExist = User::where('phone', $request->phone)->first();
             if ($isExist) {
                 return response()->json([
@@ -52,20 +35,19 @@ class PatientController extends Controller
                     'error' => 'registration failed!',
                 ], 409);
             }
-
+            // create new user
             $user = new User();
             $user->phone = $request->phone;
-            $user->status = status::ACTIVE;
-            $user->role = role::PATIENT;
+            $user->status = STATUS::ACTIVE;
+            $user->role = ROLE::PATIENT;
             $user->save();
-
+            // create new patient
             $patient = new Patient();
             $patient->user_id = $user->id;
             $patient->name = $request->name;
             $patient->address = $request->address;
             $patient->age = intval($request->age);
             $patient->save();
-
             $patientData = [
                 'user_id' => $user->id,
                 'patient_id' => $patient->id,
@@ -79,7 +61,9 @@ class PatientController extends Controller
                 'message' => 'patient registration successfully!',
                 'data' =>   $patientData
             ], 200);
-        } catch (\Exception $e) {
+        }
+        // handel exceptional error
+        catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
     }

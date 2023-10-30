@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Patient extends Model
+class Schedule extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['user_id', 'name', 'age', 'gender', 'address'];
+    protected $fillable = ['doctor_id', 'chamber_id', 'date',  'day', 'opening_time', 'close_time'];
 }
