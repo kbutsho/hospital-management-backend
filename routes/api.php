@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ROLE;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\PatientController;
@@ -15,6 +16,7 @@ Route::middleware(['api'])->group(function () {
 });
 
 Route::post('/patient-registration', [PatientController::class, 'createPatient']);
+Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
 
 Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
     Route::post('/create-chamber', [ChamberController::class, 'createChamber']);
