@@ -42,11 +42,14 @@ class AppointmentController extends Controller
                     // user as patient
                     if ($existUser->role === ROLE::PATIENT) {
                         $existPatient = Patient::where('user_id', $existUser->id)->first();
+                        // check appointment already taken or not
                         $isTakenAppointment = Appointment::where('patient_id', $existPatient->id)
                             ->where(
                                 'datetime',
-                                Carbon::createFromFormat('d-m-Y h:i A', $request->datetime)
-                                    ->format('Y-m-d H:i:s')
+                                Carbon::createFromFormat(
+                                    'd-m-Y h:i A',
+                                    $request->datetime
+                                )->format('Y-m-d H:i:s')
                             )->first();
                         if ($isTakenAppointment) {
                             return response()->json([
