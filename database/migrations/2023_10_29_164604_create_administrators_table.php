@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('administrators', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->bigInteger('user_id');
             $table->string('name');
-            $table->text('address')->nullable();
+            $table->longText('address')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

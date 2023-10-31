@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('visiting_hours', function (Blueprint $table) {
             $table->id();
-            $table->integer('doctor_id');
-            $table->integer('chamber_id');
-            $table->text('details');
+            $table->bigInteger('doctor_id');
+            $table->bigInteger('chamber_id');
+            $table->longText('details');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -17,11 +17,6 @@ return new class extends Migration
             $table->bigInteger('patient_id');
             $table->bigInteger('doctor_id');
             $table->bigInteger('chamber_id');
-            // $table->string('name');
-            // $table->string('phone');
-            // $table->integer('age');
-            // $table->string('gender');
-            // $table->text('address');
             $table->datetime('datetime');
             $table->timestamps();
             $table->softDeletes();

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->integer('doctor_id');
-            $table->integer('chamber_id');
+            $table->bigInteger('doctor_id');
+            $table->bigInteger('chamber_id');
             $table->date('date');
             $table->string('day');
             $table->time('opening_time');

@@ -14,10 +14,6 @@ class Appointment extends Model
         'patient_id',
         'doctor_id',
         'chamber_id',
-        // 'name',
-        // 'phone',
-        // 'age',
-        // 'address',
         'datetime'
     ];
 }

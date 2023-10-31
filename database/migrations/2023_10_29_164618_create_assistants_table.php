@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('assistants', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->bigInteger('user_id');
             $table->string('name');
             $table->text('address')->nullable();
-            $table->integer('doctor_id');
-            $table->integer('chamber_id');
+            $table->bigInteger('doctor_id');
+            $table->bigInteger('chamber_id');
             $table->timestamps();
             $table->softDeletes();
         });
