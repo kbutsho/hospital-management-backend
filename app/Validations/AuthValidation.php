@@ -36,7 +36,7 @@ class AuthValidation
                 'regex:/[0-9]/',
                 'regex:/[@$!%*#?&]/',
             ],
-            'confirm_password' => [
+            'confirmPassword' => [
                 'required',
                 'same:password',
                 'min:10',
@@ -57,8 +57,8 @@ class AuthValidation
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password format!',
             'password.min' => 'must contain 10 characters!',
-            'confirm_password.required' => 'confirm password is required!',
-            'confirm_password.same' => 'confirm password not match!'
+            'confirmPassword.required' => 'confirm password is required!',
+            'confirmPassword.same' => 'confirm password not match!'
         ];
         $this->assistantRegistrationRules = [
             'name' => 'required|min:3|max:40',
@@ -81,7 +81,7 @@ class AuthValidation
                 'regex:/[0-9]/',
                 'regex:/[@$!%*#?&]/'
             ],
-            'confirm_password' => [
+            'confirmPassword' => [
                 'required',
                 'same:password',
                 'min:10'
@@ -106,8 +106,8 @@ class AuthValidation
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password formate!',
             'password.min' => 'must contain 10 characters!',
-            'confirm_password.required' => 'confirm password is required!',
-            'confirm_password.same' => 'confirm password not match!'
+            'confirmPassword.required' => 'confirm password is required!',
+            'confirmPassword.same' => 'confirm password not match!'
         ];
         $this->loginRules = [
             'credential' => 'required',
