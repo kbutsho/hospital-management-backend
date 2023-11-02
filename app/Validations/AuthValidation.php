@@ -24,14 +24,15 @@ class AuthValidation
             'name' => 'required|min:3|max:40',
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'email' => 'required|email',
-            'address' => 'required',
+            'address' => 'required|string|max:200',
             'role' => ['required', Rule::in([ROLE::ADMINISTRATOR])],
-            'organization_id' => 'required|integer',
-            'designation_id' => 'required|integer',
+            'organization' => 'required|string|max:200',
+            'designation' => 'required|string|max:200',
             'password' => [
                 'required',
                 'string',
                 'min:10',
+                'max:24',
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
@@ -54,15 +55,19 @@ class AuthValidation
             'email.required' => 'email is required!',
             'email.email' => 'invalid email address!',
             'address.required' => 'address is required',
+            'address.max' => 'address is too large!',
             'role.required' => 'role is required!',
             'role.in' => 'invalid role selected!',
-            'organization_id.required' => 'organization name is required!',
-            'organization_id.integer' => 'invalid organization selected!',
-            'designation_id.required' => 'designation name is required!',
-            'designation_id.integer' => 'invalid designation selected!',
+            'organization.required' => 'organization name is required!',
+            'organization.string' => 'invalid organization information!',
+            'organization.max' => 'organization name is too large!',
+            'designation.required' => 'designation name is required!',
+            'designation.string' => 'invalid designation information!',
+            'designation.max' => 'designation name is too large!',
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password format!',
             'password.min' => 'must contain 10 characters!',
+            'password.max' => 'password is too large!',
             'confirmPassword.required' => 'confirm password is required!',
             'confirmPassword.same' => 'confirm password not match!'
         ];
@@ -70,14 +75,15 @@ class AuthValidation
             'name' => 'required|min:3|max:40',
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'email' => 'required|email',
-            'address' => 'required',
+            'address' => 'required|string|max:200',
             'role' => ['required', Rule::in([ROLE::DOCTOR])],
             'specialization_id' => 'required|integer',
-            'designation' => 'required|string',
+            'designation' => 'required|string|max:200',
             'password' => [
                 'required',
                 'string',
                 'min:10',
+                'max:24',
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
@@ -100,15 +106,18 @@ class AuthValidation
             'email.required' => 'email is required!',
             'email.email' => 'invalid email address!',
             'address.required' => 'address is required!',
+            'address.max' => 'address is too large!',
             'role.required' => 'role is required!',
             'role.in' => 'invalid role selected!',
             'specialization_id.required' => 'specialization name is required!',
             'specialization_id.integer' => 'invalid specialization selected!',
             'designation.required' => 'designation name is required!',
             'designation.string' => 'invalid designation formate!',
+            'designation.max' => 'designation is too large!',
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password format!',
             'password.min' => 'must contain 10 characters!',
+            'password.max' => 'password is too large!',
             'confirmPassword.required' => 'confirm password is required!',
             'confirmPassword.same' => 'confirm password not match!'
         ];
@@ -116,6 +125,7 @@ class AuthValidation
             'name' => 'required|min:3|max:40',
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'email' => 'required|email',
+            'address' => 'required|string|max:200',
             'role' => [
                 'required',
                 Rule::in([
@@ -128,6 +138,7 @@ class AuthValidation
                 'required',
                 'string',
                 'min:10',
+                'max:24',
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
@@ -149,6 +160,8 @@ class AuthValidation
             'phone.max' => 'invalid phone number!',
             'email.required' => 'email is required!',
             'email.email' => 'invalid email address!',
+            'address.required' => 'address is required!',
+            'address.max' => 'address is too large!',
             'role.required' => 'role is required!',
             'role.in' => 'invalid role selected!',
             'doctor_id.required' => 'doctor is required!',
@@ -158,6 +171,7 @@ class AuthValidation
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password formate!',
             'password.min' => 'must contain 10 characters!',
+            'password.max' => 'password is too large!',
             'confirmPassword.required' => 'confirm password is required!',
             'confirmPassword.same' => 'confirm password not match!'
         ];
@@ -167,7 +181,7 @@ class AuthValidation
             'age' => 'required|integer',
             'gender' => 'required',
             'blood_group_id' => 'required|integer',
-            'address' => 'required|string',
+            'address' => 'required|string|max:200',
         ];
         $this->patientSignupMessages = [
             'name.required' => 'name is required!',
@@ -183,7 +197,8 @@ class AuthValidation
             'blood_group_id.integer' => 'invalid blood group!',
             'gender.required' => 'gender is required!',
             'address.required' => 'address is required!',
-            'address.string' => 'invalid address formate!'
+            'address.string' => 'invalid address formate!',
+            'address.max' => 'address is too large!'
         ];
         $this->loginRules = [
             'credential' => 'required',

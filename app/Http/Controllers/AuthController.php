@@ -76,8 +76,8 @@ class AuthController extends Controller
                 $admin->user_id = $user->id;
                 $admin->name = $request->name;
                 $admin->address = $request->address;
-                $admin->organization_id = intval($request->organization_id);
-                $admin->designation_id = intval($request->designation_id);
+                $admin->organization = $request->organization;
+                $admin->designation = $request->designation;
                 $admin->save();
                 $adminData = [
                     'user_id' => $user->id,
@@ -87,8 +87,8 @@ class AuthController extends Controller
                     'email' => $user->email,
                     'address' => $admin->address,
                     'status' => $user->status,
-                    // add organization name
-                    // add designation name
+                    'address' => $admin->organization,
+                    'status' => $user->designation
                 ];
                 return response()->json([
                     'status' => 'success',
