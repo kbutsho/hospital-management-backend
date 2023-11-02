@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Doctor extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['user_id', 'name'];
+    protected $fillable = ['user_id', 'name', 'address', 'designation', 'specialization_id'];
 }

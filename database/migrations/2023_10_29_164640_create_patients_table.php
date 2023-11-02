@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->string('name');
             $table->bigInteger('age');
+            $table->bigInteger('blood_group_id');
             $table->enum('gender', ['male', 'female']);
             $table->text('address');
             $table->timestamps();

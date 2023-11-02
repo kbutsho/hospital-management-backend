@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->string('name');
-            $table->longText('address')->nullable();
+            $table->longText('address');
+            $table->bigInteger('organization_id');
+            $table->bigInteger('designation_id');
             $table->timestamps();
             $table->softDeletes();
         });

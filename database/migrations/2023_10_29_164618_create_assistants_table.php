@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->string('name');
-            $table->text('address')->nullable();
+            $table->text('address');
             $table->bigInteger('doctor_id');
             $table->bigInteger('chamber_id');
             $table->timestamps();
