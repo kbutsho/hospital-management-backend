@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('assistants', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
+            $table->bigInteger('user_id')->unique();
             $table->string('name');
             $table->text('address');
             $table->bigInteger('doctor_id');

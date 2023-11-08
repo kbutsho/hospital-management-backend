@@ -39,27 +39,32 @@ class AuthController extends Controller
                 ['email', '=', $request->email],
                 ['phone', '=', $request->phone]
             ])->first();
-            if ($isConflict) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email and phone number already used!',
-                    'error' => 'registration failed!'
-                ], 409);
-            }
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
-            if ($isEmailExist) {
+            if ($isConflict) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "email" => "email already used!",
+                        "phone" => "phone already used!",
+                    ]
                 ], 409);
-            }
-            if ($isPhoneExist) {
+            } else if ($isEmailExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'phone number already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "email" => "email already used!"
+                    ]
+                ], 409);
+            } else if ($isPhoneExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "phone" => "phone already used!"
+                    ]
                 ], 409);
             }
             // create new user
@@ -91,13 +96,13 @@ class AuthController extends Controller
                     'status' => $user->designation
                 ];
                 return response()->json([
-                    'status' => 'success',
-                    'message' => 'registration successful! wait for approval!',
+                    'status' => true,
+                    'message' => 'signup done! wait for approval!',
                     'data' => $adminData
                 ], 202);
             } else {
                 return response()->json([
-                    'status' => 'failed',
+                    'status' => false,
                     'message' => 'invalid role selected!',
                     'error' => 'registration failed!'
                 ], 422);
@@ -124,29 +129,71 @@ class AuthController extends Controller
             // check duplicate entry
             $isConflict = User::where([
                 ['email', '=', $request->email],
-                ['phone', '=', $request->phone]
+                ['phone', '=', $request->phone],
             ])->first();
-            if ($isConflict) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email and phone number already used!',
-                    'error' => 'registration failed!'
-                ], 409);
-            }
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
-            if ($isEmailExist) {
+            $isBMDCExist = Doctor::where([['bmdc_id', '=', $request->bmdc_id]])->first();
+            if ($isConflict && $isBMDCExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "email" => "email already used!",
+                        "phone" => "phone already used!",
+                        "bmdc_id" => "bmdc id already used!",
+                    ]
                 ], 409);
-            }
-            if ($isPhoneExist) {
+            } else if ($isConflict) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'phone number already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'email and phone already used!',
+                    'error' => [
+                        "email" => "email already used!",
+                        "phone" => "phone already used!",
+                    ]
+                ], 409);
+            } else if ($isEmailExist && $isBMDCExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'email & BMDC id already used!',
+                    'error' => [
+                        "email" => "email already used!",
+                        "bmdc_id" => "bmdc id already used!",
+                    ]
+                ], 409);
+            } else if ($isPhoneExist && $isBMDCExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'phone & BMDC id already used!',
+                    'error' => [
+                        "bmdc_id" => "bmdc id already used!",
+                        "phone" => "phone already used!",
+                    ]
+                ], 409);
+            } else if ($isEmailExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'email already used!',
+                    'error' => [
+                        "email" => "email already used!"
+                    ]
+                ], 409);
+            } else if ($isPhoneExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'phone already used!',
+                    'error' => [
+                        "phone" => "phone already used!"
+                    ]
+                ], 409);
+            } else if ($isBMDCExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'BMDC id already used!',
+                    'error' => [
+                        "bmdc_id" => "bmdc id already used!"
+                    ]
                 ], 409);
             }
             // create new user
@@ -162,7 +209,7 @@ class AuthController extends Controller
                 $doctor = new Doctor();
                 $doctor->user_id = $user->id;
                 $doctor->name = $request->name;
-                $doctor->address = $request->address;
+                $doctor->bmdc_id = $request->bmdc_id;
                 $doctor->designation = $request->designation;
                 $doctor->specialization_id = intval($request->specialization_id);;
                 $doctor->save();
@@ -172,14 +219,14 @@ class AuthController extends Controller
                     'name' => $doctor->name,
                     'phone' => $user->phone,
                     'email' => $user->email,
-                    'address' => $doctor->address,
+                    'bmdc_id' => $doctor->bmdc_id,
                     'status' => $user->status,
                     'designation' => $doctor->designation,
                     // add specialization name
                 ];
                 return response()->json([
-                    'status' => 'success',
-                    'message' => 'registration successful! wait for approval!',
+                    'status' => true,
+                    'message' => 'signup done! wait for approval!',
                     'data' => $doctorData
                 ], 202);
             }
@@ -207,57 +254,71 @@ class AuthController extends Controller
                 ['email', '=', $request->email],
                 ['phone', '=', $request->phone]
             ])->first();
-            if ($isConflict) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email and phone number already used!',
-                    'error' => 'registration failed!'
-                ], 409);
-            }
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
-            if ($isEmailExist) {
+            if ($isConflict) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'email already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "email" => "email already used!",
+                        "phone" => "phone already used!",
+                    ]
                 ], 409);
-            }
-            if ($isPhoneExist) {
+            } else if ($isEmailExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'phone number already used!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "email" => "email already used!"
+                    ]
+                ], 409);
+            } else if ($isPhoneExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'phone already used!',
+                    'error' => [
+                        "phone" => "phone already used!"
+                    ]
                 ], 409);
             }
             $isDoctorExist = Doctor::where([['id', '=', $request->doctor_id]])->first();
             $isChamberExist = Chamber::where([['id', '=', $request->chamber_id]])->first();
             if (!$isDoctorExist && !$isChamberExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'invalid doctor & chamber information!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "doctor_id" => "invalid doctor information!",
+                        "chamber_id" => "invalid doctor information!",
+                    ]
                 ], 422);
             }
             if (!$isDoctorExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'invalid doctor information!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "doctor_id" => "invalid doctor information!"
+                    ]
                 ], 422);
             }
             if (!$isChamberExist) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'invalid chamber information!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "chamber_id" => "invalid chamber information!"
+                    ]
                 ], 422);
             }
             if ($isChamberExist->status !== STATUS::ACTIVE) {
                 return response()->json([
-                    'status' => 'failed',
-                    'message' => 'chamber is now' . $isChamberExist->status . '! try again later!',
-                    'error' => 'registration failed!'
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "chamber_id" => "chamber is not active!"
+                    ]
                 ], 422);
             }
             // create new user
@@ -287,8 +348,8 @@ class AuthController extends Controller
                     'status' => $user->status
                 ];
                 return response()->json([
-                    'status' => 'success',
-                    'message' => 'registration successful! wait for approval!',
+                    'status' => true,
+                    'message' => 'signup done! wait for approval!',
                     'data' => $assistantData
                 ], 202);
             }
@@ -316,8 +377,10 @@ class AuthController extends Controller
             if ($isExist) {
                 return response()->json([
                     'status' => 'failed!',
-                    'message' => 'phone already used!',
-                    'error' => 'patient not registered!',
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "phone" => "phone already used!"
+                    ]
                 ], 409);
             }
             // create new user
@@ -333,6 +396,8 @@ class AuthController extends Controller
             $patient->address = $request->address;
             $patient->age = intval($request->age);
             $patient->blood_group_id = intval($request->blood_group_id);
+            $patient->emergency_contact_name = $request->emergency_contact_name;
+            $patient->emergency_contact_number = $request->emergency_contact_number;
             $patient->gender = $request->gender;
             $patient->save();
             $patientData = [
@@ -343,10 +408,12 @@ class AuthController extends Controller
                 'age' => $patient->age,
                 'gender' => $patient->age,
                 'phone' => $user->phone,
+                'emergency_contact_name' => $patient->emergency_contact_name,
+                'emergency_contact_number' => $patient->emergency_contact_number,
             ];
             return response()->json([
-                'status' => 'success',
-                'message' => 'patient registration successfully!',
+                'status' => true,
+                'message' => 'patient signup done!',
                 'data' =>   $patientData
             ], 200);
         }
@@ -379,7 +446,7 @@ class AuthController extends Controller
                     // create jwt token for login
                     $token = JWTAuth::fromUser($user);
                     return response()->json([
-                        'status' => 'success',
+                        'status' => true,
                         'message' => 'login successful!',
                         'user_id' => $user->id,
                         'user_role' => $user->role,
@@ -389,7 +456,7 @@ class AuthController extends Controller
                 // user not active
                 else {
                     return response()->json([
-                        'status' => 'failed',
+                        'status' => false,
                         'message' => 'your account is ' . $user->status . '! try again later!',
                         'error' => 'login failed!',
                     ], 403);
@@ -397,7 +464,7 @@ class AuthController extends Controller
             }
             // password or email not matched!
             return response()->json([
-                'status' => 'failed',
+                'status' => false,
                 'message' => 'invalid credentials!',
                 'error' => 'login failed!',
             ], 401);

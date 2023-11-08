@@ -19,6 +19,8 @@ return new class extends Migration
             $table->bigInteger('blood_group_id');
             $table->enum('gender', ['male', 'female']);
             $table->text('address');
+            $table->string('emergency_contact_number');
+            $table->string('emergency_contact_name');
             $table->timestamps();
             $table->softDeletes();
         });
