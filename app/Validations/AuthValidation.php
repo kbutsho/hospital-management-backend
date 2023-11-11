@@ -212,7 +212,7 @@ class AuthValidation
         ];
         $this->loginMessages = [
             'credential.required' => 'email or phone is required!',
-            'password.required' => 'password is required',
+            'password.required' => 'password is required!',
         ];
     }
 }

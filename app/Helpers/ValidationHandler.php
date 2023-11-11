@@ -8,7 +8,7 @@ class ValidationHandler
     {
         return response()->json([
             'status' => false,
-            'message' => 'validation error!',
+            'message' => 'please fill up all required fields!',
             'error' => $validator->errors(),
         ], 422);
     }
