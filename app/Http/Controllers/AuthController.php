@@ -448,8 +448,8 @@ class AuthController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => 'login successful!',
-                        'user_id' => $user->id,
-                        'user_role' => $user->role,
+                        // 'userId' => $user->id,
+                        'userRole' => $user->role,
                         'token' => $token
                     ], 200);
                 }
@@ -457,16 +457,16 @@ class AuthController extends Controller
                 else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'your account is ' . $user->status . '! try again later!',
-                        'error' => 'login failed!',
+                        'message' => 'try again later!',
+                        'error' => 'your account is ' . $user->status . '! ',
                     ], 403);
                 }
             }
             // password or email not matched!
             return response()->json([
                 'status' => false,
-                'message' => 'invalid credentials!',
-                'error' => 'login failed!',
+                'message' => 'login failed!',
+                'error' => 'invalid credential!',
             ], 401);
         }
         // handel exceptional error
