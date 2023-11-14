@@ -443,13 +443,42 @@ class AuthController extends Controller
                 // check user active or not
                 $user = Auth::user();
                 if ($user->status === STATUS::ACTIVE) {
+                    $name = '';
+                    $role = $user->role;
+                    if ($role === ROLE::ADMINISTRATOR) {
+                        $admin = Administrator::where('user_id', $user->id)->first();
+                        if ($admin) {
+                            $name = $admin->name;
+                        }
+                    } else if ($role === ROLE::DOCTOR) {
+                        $doctor = Doctor::where('user_id', $user->id)->first();
+                        if ($doctor) {
+                            $name = $doctor->name;
+                        }
+                    } else if ($role === ROLE::ASSISTANT) {
+                        $assistant = Assistant::where('user_id', $user->id)->first();
+                        if ($assistant) {
+                            $name = $assistant->name;
+                        }
+                    } else {
+                        // Handle unknown role
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'invalid user role',
+                        ], 400);
+                    }
                     // create jwt token for login
+                    // $expiration = Carbon::now()->addDays(7)->timestamp; // Token expiration set to 7 days from now
+                    // $token = JWTAuth::factory()
+                    //     ->setTTL($expiration)
+                    //     ->fromUser($user);
+
                     $token = JWTAuth::fromUser($user);
                     return response()->json([
                         'status' => true,
                         'message' => 'login successful!',
-                        // 'userId' => $user->id,
-                        'role' => $user->role,
+                        'name' => $name,
+                        'role' => $role,
                         'token' => $token
                     ], 200);
                 }
