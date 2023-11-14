@@ -25,7 +25,6 @@ return new class extends Migration
             ]);
             $table->enum('status', [
                 STATUS::ACTIVE,
-                STATUS::IN_ACTIVE,
                 STATUS::PENDING,
                 STATUS::DISABLE,
             ]);

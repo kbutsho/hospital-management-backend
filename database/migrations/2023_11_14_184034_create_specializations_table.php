@@ -1,6 +1,5 @@
 <?php
 
-use App\Helpers\status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,16 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chambers', function (Blueprint $table) {
+        Schema::create('specializations', function (Blueprint $table) {
             $table->id();
-            $table->longText('location');
-            $table->enum('status', [
-                STATUS::ACTIVE,
-                STATUS::PENDING,
-                STATUS::DISABLE,
-            ]);
-            $table->bigInteger('user_id');
-            $table->bigInteger('doctor_id');
+            $table->string('name')->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chambers');
+        Schema::dropIfExists('specializations');
     }
 };

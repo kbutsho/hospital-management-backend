@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +34,8 @@ Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
         Route::get('/doctor/all', [DoctorController::class, 'getAllDoctor']);
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
+
+        Route::post('/specialization/create', [SpecializationController::class, 'createSpecialist']);
+        Route::get('/specialization/all', [SpecializationController::class, 'getAllSpecialization']);
     });
 });
