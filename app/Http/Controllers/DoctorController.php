@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\Doctor;
 use App\Models\User;
 use App\Validations\DoctorValidation;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ class DoctorController extends Controller
         try {
             $doctors = User::where('role', 'doctor')
                 ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                ->join('departments', 'doctors.department_id', '=', 'departments.id')
                 ->select(
                     'users.id as userId',
                     'users.email',
@@ -25,9 +27,10 @@ class DoctorController extends Controller
                     'doctors.name',
                     'doctors.address',
                     'doctors.designation',
-                    'doctors.specialization_id as specializationId'
+                    'departments.name as departmentName'
                 )
                 ->get();
+
             return response()->json([
                 'status' => true,
                 'message' => 'doctors retrieved successfully!',
@@ -60,6 +63,21 @@ class DoctorController extends Controller
                 'status' => false,
                 'message' => 'user not found!',
             ], 404);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function deleteDoctor($id)
+    {
+        try {
+            $doctor = Doctor::findOrFail($id);
+            $user = User::where('id', '=', $doctor->user_id)->first();
+            $doctor->delete();
+            $user->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'doctor deleted successfully!'
+            ], 204);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

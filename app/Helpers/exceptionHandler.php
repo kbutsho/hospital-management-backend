@@ -8,9 +8,9 @@ class ExceptionHandler
     {
         return response()->json([
             'status' => false,
-            'message' => 'login failed!',
-            'error' => "internal server error!",
-            //'error' => $e->getMessage(),
+            'message' => 'internal server error!',
+            // 'error' => "internal server error!",
+            'error' => $e->getMessage()
         ], 500);
     }
 }

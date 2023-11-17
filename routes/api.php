@@ -4,9 +4,9 @@ use App\Helpers\ROLE;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\SpecializationController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +19,7 @@ Route::prefix('signup')->group(function () {
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
+Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);
 
 Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
     Route::post('/create-chamber', [ChamberController::class, 'createChamber']);
@@ -29,13 +30,15 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT]
     Route::post('/create-visiting-hour', [VisitingHourController::class, 'createVisitingHour']);
 });
 
-
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
         Route::get('/doctor/all', [DoctorController::class, 'getAllDoctor']);
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
+        Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 
-        Route::post('/specialization/create', [SpecializationController::class, 'createSpecialist']);
-        Route::get('/specialization/all', [SpecializationController::class, 'getAllSpecialization']);
+        Route::post('/department/create', [DepartmentController::class, 'createDepartment']);
+        Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);
+        Route::delete('/department/{id}', [DepartmentController::class, 'deleteDepartment']);
+        Route::patch('/department/{id}', [DepartmentController::class, 'updateDepartment']);
     });
 });

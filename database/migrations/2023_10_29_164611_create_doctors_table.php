@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unique();
+            $table->bigInteger('user_id');
             $table->string('name');
             $table->text('designation');
-            $table->string('bmdc_id')->unique();
+            $table->string('bmdc_id');
             $table->text('address')->nullable();
-            $table->bigInteger('specialization_id');
+            $table->bigInteger('department_id');
             $table->timestamps();
             $table->softDeletes();
         });

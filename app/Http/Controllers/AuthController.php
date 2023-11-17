@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\Department;
 use App\Models\Patient;
 use App\Validations\AuthValidation;
 
@@ -207,12 +208,13 @@ class AuthController extends Controller
             // create new doctor
             if ($request->role === ROLE::DOCTOR) {
                 $doctor = new Doctor();
-                $doctor->user_id = $user->id;
+                $doctor->user_id = intval($user->id);
                 $doctor->name = $request->name;
-                $doctor->bmdc_id = $request->bmdc_id;
+                $doctor->bmdc_id = intval($request->bmdc_id);
                 $doctor->designation = $request->designation;
-                $doctor->specialization_id = intval($request->specialization_id);;
+                $doctor->department_id = intval($request->department_id);
                 $doctor->save();
+                $department = Department::where('id', '=', $doctor->department_id)->first();
                 $doctorData = [
                     'user_id' => $user->id,
                     'doctor_id' => $doctor->id,
@@ -222,7 +224,7 @@ class AuthController extends Controller
                     'bmdc_id' => $doctor->bmdc_id,
                     'status' => $user->status,
                     'designation' => $doctor->designation,
-                    // add specialization name
+                    'department' => $department->name
                 ];
                 return response()->json([
                     'status' => true,
