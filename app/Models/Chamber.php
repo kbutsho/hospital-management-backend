@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Chamber extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['location', 'status', 'user_id', 'doctor_id'];
+    protected $fillable = ['address', 'status', 'user_id', 'doctor_id'];
 }

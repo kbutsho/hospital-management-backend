@@ -34,15 +34,9 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return ValidationHandler::handleValidation($validator);
             }
-            //end validation
-            // check duplicate entry
-            $isConflict = User::where([
-                ['email', '=', $request->email],
-                ['phone', '=', $request->phone]
-            ])->first();
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
-            if ($isConflict) {
+            if ($isEmailExist && $isPhoneExist) {
                 return response()->json([
                     'status' => false,
                     'message' => 'registration failed!',
@@ -128,14 +122,11 @@ class AuthController extends Controller
             }
             //end validation
             // check duplicate entry
-            $isConflict = User::where([
-                ['email', '=', $request->email],
-                ['phone', '=', $request->phone],
-            ])->first();
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
             $isBMDCExist = Doctor::where([['bmdc_id', '=', $request->bmdc_id]])->first();
-            if ($isConflict && $isBMDCExist) {
+            $isDepartmentExist = Department::where([['id', '=', $request->department_id]])->first();
+            if ($isEmailExist && $isPhoneExist && $isBMDCExist) {
                 return response()->json([
                     'status' => false,
                     'message' => 'registration failed!',
@@ -145,10 +136,10 @@ class AuthController extends Controller
                         "bmdc_id" => "bmdc id already used!",
                     ]
                 ], 409);
-            } else if ($isConflict) {
+            } else if ($isEmailExist && $isPhoneExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'email and phone already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "email" => "email already used!",
                         "phone" => "phone already used!",
@@ -157,7 +148,7 @@ class AuthController extends Controller
             } else if ($isEmailExist && $isBMDCExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'email & BMDC id already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "email" => "email already used!",
                         "bmdc_id" => "bmdc id already used!",
@@ -166,7 +157,7 @@ class AuthController extends Controller
             } else if ($isPhoneExist && $isBMDCExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'phone & BMDC id already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "bmdc_id" => "bmdc id already used!",
                         "phone" => "phone already used!",
@@ -175,7 +166,7 @@ class AuthController extends Controller
             } else if ($isEmailExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'email already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "email" => "email already used!"
                     ]
@@ -183,7 +174,7 @@ class AuthController extends Controller
             } else if ($isPhoneExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'phone already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "phone" => "phone already used!"
                     ]
@@ -191,9 +182,18 @@ class AuthController extends Controller
             } else if ($isBMDCExist) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'BMDC id already used!',
+                    'message' => 'registration failed!',
                     'error' => [
                         "bmdc_id" => "bmdc id already used!"
+                    ]
+                ], 409);
+            }
+            if (!$isDepartmentExist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'registration failed!',
+                    'error' => [
+                        "department_id" => "invalid department selected!"
                     ]
                 ], 409);
             }
@@ -466,15 +466,9 @@ class AuthController extends Controller
                         // Handle unknown role
                         return response()->json([
                             'status' => false,
-                            'message' => 'invalid user role',
-                        ], 400);
+                            'message' => 'invalid user role!',
+                        ], 401);
                     }
-                    // create jwt token for login
-                    // $expiration = Carbon::now()->addDays(7)->timestamp; // Token expiration set to 7 days from now
-                    // $token = JWTAuth::factory()
-                    //     ->setTTL($expiration)
-                    //     ->fromUser($user);
-
                     $token = JWTAuth::fromUser($user);
                     return response()->json([
                         'status' => true,
@@ -488,16 +482,16 @@ class AuthController extends Controller
                 else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'try again later!',
-                        'error' => 'your account is ' . $user->status . '! ',
+                        'message' => 'your account is now ' . $user->status . '! ',
+                        'error' => 'login failed. try again later!',
                     ], 403);
                 }
             }
             // password or email not matched!
             return response()->json([
                 'status' => false,
-                'message' => 'login failed!',
-                'error' => 'invalid credential!',
+                'message' => 'invalid credential!',
+                'error' => 'login failed. try again later!',
             ], 401);
         }
         // handel exceptional error

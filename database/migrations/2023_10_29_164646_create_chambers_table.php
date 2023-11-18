@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('chambers', function (Blueprint $table) {
             $table->id();
-            $table->longText('location');
+            $table->text('address');
             $table->enum('status', [
                 STATUS::ACTIVE,
                 STATUS::PENDING,

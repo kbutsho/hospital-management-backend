@@ -29,7 +29,7 @@ class ChamberController extends Controller
             // extract user, doctor and chamber information
             $user = JWTAuth::parseToken()->authenticate();
             $doctor = Doctor::where('user_id', $user->id)->first();
-            $isExist = Chamber::where('location', $request->location)
+            $isExist = Chamber::where('address', $request->location)
                 ->where('user_id', $user->id)
                 ->where('doctor_id', $doctor->id)
                 ->first();
@@ -37,13 +37,15 @@ class ChamberController extends Controller
             if ($isExist) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'chamber already created!',
-                    'error' => 'failed to created chamber!'
+                    'message' => 'failed to created chamber!',
+                    'error' => [
+                        'address' => 'chamber already created!'
+                    ]
                 ], 409);
             }
             //create new chamber
             $chamber = new Chamber();
-            $chamber->location = $request->location;
+            $chamber->address = $request->address;
             $chamber->status = STATUS::PENDING;
             $chamber->user_id = $user->id;
             $chamber->doctor_id = $doctor->id;

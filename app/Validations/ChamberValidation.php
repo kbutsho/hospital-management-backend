@@ -10,10 +10,11 @@ class ChamberValidation
     public function __construct()
     {
         $this->createChamberRules = [
-            'location' => 'required',
+            'address' => 'required|max:200',
         ];
         $this->createChamberMessages = [
-            'location.required' => 'location is required!',
+            'address.required' => 'address is required!',
+            'address.max' => 'location is too large!',
         ];
     }
 }
