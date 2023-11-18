@@ -443,7 +443,7 @@ class AuthController extends Controller
                 || Auth::attempt(['phone' => $request->credential, 'password' => $request->password])
             ) {
                 // check user active or not
-                $user = Auth::user();
+                $user = Auth::user(); // fuck. here i need to modify user
                 if ($user->status === STATUS::ACTIVE) {
                     $name = '';
                     $role = $user->role;

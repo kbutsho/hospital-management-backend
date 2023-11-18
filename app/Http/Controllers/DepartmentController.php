@@ -87,7 +87,7 @@ class DepartmentController extends Controller
                     'error' => [
                         "name" => "department already exist!"
                     ],
-                    'message' => 'failed to create department!',
+                    'message' => 'failed to update department!',
                 ], 409);
             };
             $department = Department::findOrFail($id);

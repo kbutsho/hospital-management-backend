@@ -21,8 +21,13 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
 Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);
 
-Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
-    Route::post('/create-chamber', [ChamberController::class, 'createChamber']);
+Route::prefix('doctor')->group(function () {
+    Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
+        Route::post('/chamber/create', [ChamberController::class, 'createChamber']);
+        Route::get('/chamber/all', [ChamberController::class, 'getDoctorsChamber']);
+        Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
+        Route::patch('/chamber/{id}', [ChamberController::class, 'updateChamber']);
+    });
 });
 
 Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT])->group(function () {

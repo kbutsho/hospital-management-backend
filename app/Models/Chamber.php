@@ -10,4 +10,9 @@ class Chamber extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['address', 'status', 'user_id', 'doctor_id'];
+
+    public function assistants()
+    {
+        return $this->hasMany(Assistant::class, 'chamber_id', 'id');
+    }
 }

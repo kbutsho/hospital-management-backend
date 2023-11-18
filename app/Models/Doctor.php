@@ -10,4 +10,9 @@ class Doctor extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['user_id', 'name', 'bmdc_id', 'designation', 'department_id'];
+
+    public function chambers()
+    {
+        return $this->hasMany(Chamber::class, 'doctor_id', 'id');
+    }
 }

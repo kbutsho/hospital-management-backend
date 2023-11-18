@@ -4,15 +4,15 @@ namespace App\Validations;
 
 class ChamberValidation
 {
-    public $createChamberRules;
-    public $createChamberMessages;
+    public $createOrUpdateChamberRules;
+    public $createOrUpdateChamberMessages;
 
     public function __construct()
     {
-        $this->createChamberRules = [
+        $this->createOrUpdateChamberRules = [
             'address' => 'required|max:200',
         ];
-        $this->createChamberMessages = [
+        $this->createOrUpdateChamberMessages = [
             'address.required' => 'address is required!',
             'address.max' => 'location is too large!',
         ];
