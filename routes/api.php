@@ -7,6 +7,7 @@ use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,3 +48,9 @@ Route::prefix('administrator')->group(function () {
         Route::patch('/department/{id}', [DepartmentController::class, 'updateDepartment']);
     });
 });
+
+Route::post('/test/add', [TestController::class, 'create']);
+Route::get('/test/all', [TestController::class, 'get']);
+Route::get('/test', [TestController::class, 'getAll']);
+Route::patch('/test/{id}', [TestController::class, 'update']);
+Route::delete('/test/{id}', [TestController::class, 'delete']);
