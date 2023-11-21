@@ -97,7 +97,31 @@ class TestController extends Controller
     {
         try {
             $perPage = $request->query('perPage') ?: 5;
-            $paginationData = Test::orderBy('id', 'desc')->paginate($perPage);
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $query = Test::orderBy('id', $request->query('sortOrder', 'asc'));
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('remote_host', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('time_stamp', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('remote_log', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('remote_user', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('http_method', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('url_path', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('protocol_version', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('status', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('http_status_code', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('bytes_sent', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('referer_url', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('user_agent', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('forwarded_info', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(status) = ?', strtolower($statusFilter));
+            }
+            $paginationData = $query->paginate($perPage);
             return response()->json([
                 'status' => true,
                 'message' => count($paginationData->items()) . " items fetched successfully!",
@@ -110,6 +134,8 @@ class TestController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+
+
     public function update(Request $request, $id)
     {
         try {
