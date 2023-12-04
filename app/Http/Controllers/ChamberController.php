@@ -97,6 +97,34 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    public function updateChamberStatus(Request $request)
+    {
+        try {
+            $validation = new ChamberValidation();
+            $rules = $validation->updateChamberStatusRules;
+            $messages = $validation->updateChamberStatusMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $isExist = Chamber::where('id', '=', $request->id)->first();
+            if ($isExist) {
+                $isExist->status = $request->status;
+                $isExist->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'status updated successfully!',
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'chamber not found!',
+            ], 404);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
     public function updateChamber(Request $request, $id)
     {
         try {
@@ -128,6 +156,67 @@ class ChamberController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'chamber updated successfully!'
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getChamberWithDoctorAndAssistant(Request $request)
+    {
+        try {
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $doctorFilter = $request->query('doctor');
+            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortBy = $request->query('sortBy', 'chambers.id');
+
+            $query = Chamber::with([
+                'doctor:id,name',
+                'assistants:id,name,chamber_id'
+            ])
+                ->select(
+                    'chambers.id',
+                    'chambers.address',
+                    'chambers.status',
+                    'chambers.doctor_id'
+                )->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('chambers.address', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('chambers.status', 'like', '%' . $searchTerm . '%');
+                });
+                $query->orWhereHas('doctor', function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('id', 'like', '%' . $searchTerm . '%');
+                })->orWhereHas('assistants', function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            }
+
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(chambers.status) = ?', strtolower($statusFilter));
+            }
+            if ($doctorFilter) {
+                $query->whereHas('doctor', function ($query) use ($doctorFilter) {
+                    $query->whereRaw('LOWER(name) = ?', strtolower($doctorFilter));
+                });
+            }
+
+
+
+            $paginationData = $query->paginate($perPage);
+
+            $total = Doctor::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);

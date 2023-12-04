@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    public function getAllDoctorList()
+    public function getAllDoctor()
     {
         try {
             $doctors = Doctor::all();
@@ -57,7 +57,7 @@ class DoctorController extends Controller
                     $q->where('users.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
                         ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors.designation', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors.address', 'like', '%' . $searchTerm . '%')
@@ -132,11 +132,21 @@ class DoctorController extends Controller
     public function getDoctorListWithChambers()
     {
         try {
-            $doctorsWithActiveChambers = Doctor::with(['chambers' => function ($query) {
-                $query->select('id', 'address', 'doctor_id')
-                    ->where('status', 'active');
-            }])->select('id', 'name')->get();
-            return $doctorsWithActiveChambers;
+            // $doctorsWithActiveChambers = Doctor::with(['chambers' => function ($query) {
+            //     $query->select('id', 'address', 'doctor_id')
+            //         ->where('status', 'active');
+            // }])->select('id', 'name')->get();
+
+            $activeDoctorsWithActiveUsers = Doctor::join('users', 'users.id', '=', 'doctors.user_id')
+                ->where('users.status', 'active')
+                ->with(['chambers' => function ($query) {
+                    $query->select('id', 'address', 'doctor_id')
+                        ->where('status', 'active');
+                }])
+                ->select('doctors.id', 'doctors.name')
+                ->get();
+
+            return $activeDoctorsWithActiveUsers;
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

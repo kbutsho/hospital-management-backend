@@ -22,7 +22,7 @@ Route::prefix('signup')->group(function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
 Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);
-Route::get('/doctor/all', [DoctorController::class, 'getAllDoctorList']);
+Route::get('/doctor/all', [DoctorController::class, 'getAllDoctor']);
 Route::get('/doctor-with-chamber/all', [DoctorController::class, 'getDoctorListWithChambers']);
 
 Route::prefix('doctor')->group(function () {
@@ -46,9 +46,13 @@ Route::prefix('administrator')->group(function () {
         Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 
 
-        Route::get('/assistant/all', [AssistantController::class, 'getAllAssistant']);
-        Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
-        Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
+        Route::get('/assistant/all', [AssistantController::class, 'getAllAssistantWithDoctorAndChamber']);
+        Route::post('/assistant/update/status', [AssistantController::class, 'updateAssistantStatus']);
+        Route::delete('/assistant/{id}', [AssistantController::class, 'deleteAssistant']);
+
+        Route::get('/chamber/all', [ChamberController::class, 'getChamberWithDoctorAndAssistant']);
+        Route::post('/chamber/update/status', [ChamberController::class, 'updateChamberStatus']);
+        Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
 
         Route::post('/department/create', [DepartmentController::class, 'createDepartment']);
         Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);

@@ -10,4 +10,9 @@ class Assistant extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['user_id', 'name', 'address', 'doctor_id', 'chamber_id'];
+
+    public function chamber()
+    {
+        return $this->belongsTo(Chamber::class, 'chamber_id', 'id');
+    }
 }
