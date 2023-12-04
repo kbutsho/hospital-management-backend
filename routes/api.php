@@ -2,6 +2,7 @@
 
 use App\Helpers\ROLE;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\DepartmentController;
@@ -21,6 +22,8 @@ Route::prefix('signup')->group(function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
 Route::get('/department/all', [DepartmentController::class, 'getAllDepartment']);
+Route::get('/doctor/all', [DoctorController::class, 'getAllDoctorList']);
+Route::get('/doctor-with-chamber/all', [DoctorController::class, 'getDoctorListWithChambers']);
 
 Route::prefix('doctor')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
@@ -38,7 +41,12 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT]
 
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
-        Route::get('/doctor/all', [DoctorController::class, 'getAllDoctor']);
+        Route::get('/doctor/all', [DoctorController::class, 'getDoctorWithDepartment']);
+        Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
+        Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
+
+
+        Route::get('/assistant/all', [AssistantController::class, 'getAllAssistant']);
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
         Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 

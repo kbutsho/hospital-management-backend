@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
+use App\Helpers\STATUS;
 use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class TestController extends Controller
                         'referer_url' => $matches[10],
                         'user_agent' => $matches[11],
                         'forwarded_info' => $matches[12],
-                        'status' => 'pending'
+                        'status' => STATUS::PENDING
                     ];
                     $values .= "('" . implode("', '", $log) . "'),";
                     $matched = true;
@@ -122,12 +123,13 @@ class TestController extends Controller
                 $query->whereRaw('LOWER(status) = ?', strtolower($statusFilter));
             }
             $paginationData = $query->paginate($perPage);
+            $total = Test::count();
             return response()->json([
                 'status' => true,
                 'message' => count($paginationData->items()) . " items fetched successfully!",
-                'total_items' => $paginationData->total(),
+                'fetched_items' => $paginationData->total(),
                 'current_page' => $paginationData->currentPage(),
-                'fetched_items' => count($paginationData->items()),
+                'total_items' => $total,
                 'data' => $paginationData->items()
             ]);
         } catch (\Exception $e) {

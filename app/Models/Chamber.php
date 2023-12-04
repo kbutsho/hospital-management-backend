@@ -15,4 +15,8 @@ class Chamber extends Model
     {
         return $this->hasMany(Assistant::class, 'chamber_id', 'id');
     }
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'id');
+    }
 }

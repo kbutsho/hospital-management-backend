@@ -12,29 +12,76 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    public function getAllDoctor()
+    public function getAllDoctorList()
     {
         try {
-            $doctors = User::where('role', 'doctor')
-                ->join('doctors', 'users.id', '=', 'doctors.user_id')
-                ->join('departments', 'doctors.department_id', '=', 'departments.id')
-                ->select(
-                    'users.id as userId',
-                    'users.email',
-                    'users.phone',
-                    'users.status',
-                    'doctors.id as doctorId',
-                    'doctors.name',
-                    'doctors.address',
-                    'doctors.designation',
-                    'departments.name as departmentName'
-                )
-                ->get();
-
+            $doctors = Doctor::all();
             return response()->json([
                 'status' => true,
                 'message' => 'doctors retrieved successfully!',
                 'data' => $doctors,
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getDoctorWithDepartment(Request $request)
+    {
+        try {
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $departmentFilter = $request->query('department');
+            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortBy = $request->query('sortBy', 'users.id');
+
+            $query = User::where('role', 'doctor')
+                ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                ->join('departments', 'doctors.department_id', '=', 'departments.id')
+                ->select(
+                    'users.id as userId',
+                    'users.email as email',
+                    'users.phone as phone',
+                    'users.status as status',
+                    'doctors.id as doctorId',
+                    'doctors.name as name',
+                    'doctors.bmdc_id as bmdc_id',
+                    'doctors.address as address',
+                    'doctors.designation as designation',
+                    'departments.name as departmentName'
+                )
+                ->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('users.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.designation', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.address', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.bmdc_id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.status', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('departments.name', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(status) = ?', strtolower($statusFilter));
+            }
+            if ($departmentFilter) {
+                $query->whereRaw('LOWER(departments.name) = ?', strtolower($departmentFilter));
+            }
+            $paginationData = $query->paginate($perPage);
+
+            $total = Doctor::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
@@ -78,6 +125,18 @@ class DoctorController extends Controller
                 'status' => true,
                 'message' => 'doctor deleted successfully!'
             ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getDoctorListWithChambers()
+    {
+        try {
+            $doctorsWithActiveChambers = Doctor::with(['chambers' => function ($query) {
+                $query->select('id', 'address', 'doctor_id')
+                    ->where('status', 'active');
+            }])->select('id', 'name')->get();
+            return $doctorsWithActiveChambers;
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
