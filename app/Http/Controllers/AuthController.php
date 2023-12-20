@@ -70,14 +70,15 @@ class AuthController extends Controller
             $user->status = STATUS::PENDING;
             $user->password = Hash::make($request->password);
             $user->save();
+
             // create new administrator
             if ($request->role === ROLE::ADMINISTRATOR) {
                 $admin = new Administrator();
                 $admin->user_id = $user->id;
                 $admin->name = $request->name;
                 $admin->address = $request->address;
-                $admin->organization = $request->organization;
-                $admin->designation = $request->designation;
+                $admin->age = intval($request->age);
+                $admin->gender = $request->gender;
                 $admin->save();
                 $adminData = [
                     'user_id' => $user->id,
@@ -86,9 +87,9 @@ class AuthController extends Controller
                     'phone' => $user->phone,
                     'email' => $user->email,
                     'address' => $admin->address,
-                    'status' => $user->status,
-                    'address' => $admin->organization,
-                    'status' => $user->designation
+                    'age' => $admin->age,
+                    'gender' => $admin->gender,
+                    'status' => $user->status
                 ];
                 return response()->json([
                     'status' => true,
@@ -208,9 +209,9 @@ class AuthController extends Controller
             // create new doctor
             if ($request->role === ROLE::DOCTOR) {
                 $doctor = new Doctor();
-                $doctor->user_id = intval($user->id);
+                $doctor->user_id = $user->id;
                 $doctor->name = $request->name;
-                $doctor->bmdc_id = intval($request->bmdc_id);
+                $doctor->bmdc_id = $request->bmdc_id;
                 $doctor->designation = $request->designation;
                 $doctor->department_id = intval($request->department_id);
                 $doctor->save();
@@ -238,6 +239,8 @@ class AuthController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+
+
     // assistant signup
     public function assistantSignup(Request $request)
     {
@@ -251,6 +254,7 @@ class AuthController extends Controller
                 return ValidationHandler::handleValidation($validator);
             }
             //end validation
+
             // check duplicate entry
             $isConflict = User::where([
                 ['email', '=', $request->email],
@@ -258,6 +262,7 @@ class AuthController extends Controller
             ])->first();
             $isEmailExist = User::where([['email', '=', $request->email]])->first();
             $isPhoneExist = User::where([['phone', '=', $request->phone]])->first();
+
             if ($isConflict) {
                 return response()->json([
                     'status' => false,
@@ -284,45 +289,7 @@ class AuthController extends Controller
                     ]
                 ], 409);
             }
-            $isDoctorExist = Doctor::where([['id', '=', $request->doctor_id]])->first();
-            $isChamberExist = Chamber::where([['id', '=', $request->chamber_id]])->first();
-            if (!$isDoctorExist && !$isChamberExist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'registration failed!',
-                    'error' => [
-                        "doctor_id" => "invalid doctor information!",
-                        "chamber_id" => "invalid doctor information!",
-                    ]
-                ], 422);
-            }
-            if (!$isDoctorExist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'registration failed!',
-                    'error' => [
-                        "doctor_id" => "invalid doctor information!"
-                    ]
-                ], 422);
-            }
-            if (!$isChamberExist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'registration failed!',
-                    'error' => [
-                        "chamber_id" => "invalid chamber information!"
-                    ]
-                ], 422);
-            }
-            if ($isChamberExist->status !== STATUS::ACTIVE) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'registration failed!',
-                    'error' => [
-                        "chamber_id" => "chamber is not active!"
-                    ]
-                ], 422);
-            }
+
             // create new user
             $user = new User();
             $user->phone = $request->phone;
@@ -337,8 +304,8 @@ class AuthController extends Controller
                 $assistant->user_id = $user->id;
                 $assistant->name = $request->name;
                 $assistant->address = $request->address;
-                $assistant->doctor_id = intval($request->doctor_id);;
-                $assistant->chamber_id = intval($request->chamber_id);;
+                $assistant->age = intval($request->age);
+                $assistant->gender = $request->gender;
                 $assistant->save();
                 $assistantData = [
                     'user_id' => $user->id,
@@ -347,6 +314,8 @@ class AuthController extends Controller
                     'phone' => $user->phone,
                     'email' => $user->email,
                     'address' => $assistant->address,
+                    'age' => $assistant->age,
+                    'gender' => $assistant->gender,
                     'status' => $user->status
                 ];
                 return response()->json([
@@ -482,7 +451,7 @@ class AuthController extends Controller
                 else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'your account is now ' . $user->status . '! ',
+                        'message' => 'your account is ' . $user->status . '! ',
                         'error' => 'login failed. try again later!',
                     ], 403);
                 }

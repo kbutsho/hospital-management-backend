@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->string('name');
-            $table->bigInteger('age');
+            $table->integer('age');
             $table->bigInteger('blood_group_id');
-            $table->enum('gender', ['male', 'female']);
+            $table->enum('gender', ['male', 'female', 'other']);
             $table->text('address');
             $table->string('emergency_contact_number');
             $table->string('emergency_contact_name');

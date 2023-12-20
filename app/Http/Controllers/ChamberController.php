@@ -14,7 +14,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ChamberController extends Controller
 {
-    public function createChamber(Request $request)
+    // administrator: create chamber
+    public function createAdministratorChamber(Request $request)
     {
         try {
             // start validation
@@ -26,29 +27,22 @@ class ChamberController extends Controller
                 return ValidationHandler::handleValidation($validator);
             }
             //end validation
-            // extract user, doctor and chamber information
-            $user = JWTAuth::parseToken()->authenticate();
-            $doctor = Doctor::where('user_id', $user->id)->first();
-            $isExist = Chamber::where('address', $request->location)
-                ->where('user_id', $user->id)
-                ->where('doctor_id', $doctor->id)
-                ->first();
+
             // restrict duplicate entry
+            $isExist = Chamber::where('room', $request->room)->first();
             if ($isExist) {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'failed to created chamber!',
                     'error' => [
-                        'address' => 'chamber already created!'
+                        'room' => 'chamber already created!'
                     ]
                 ], 409);
             }
             //create new chamber
             $chamber = new Chamber();
-            $chamber->address = $request->address;
-            $chamber->status = STATUS::PENDING;
-            $chamber->user_id = $user->id;
-            $chamber->doctor_id = $doctor->id;
+            $chamber->room = $request->room;
+            $chamber->status = STATUS::ACTIVE;
             $chamber->save();
             return response()->json([
                 'status' => 'success',
@@ -61,6 +55,76 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator: get all chamber list
+    public function getAdministratorChamber(Request $request)
+    {
+        try {
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortBy = $request->query('sortBy', 'chambers.id');
+
+            $query = Chamber::select('chambers.id', 'chambers.room', 'chambers.status')
+                ->orderBy($sortBy, $sortOrder);
+            // if ($searchTerm) {
+            //     $query->where(function ($q) use ($searchTerm) {
+            //         $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
+            //             ->orWhere('chambers.room', 'like', '%' . $searchTerm . '%')
+            //             ->orWhere('chambers.status', 'like', '%' . $searchTerm . '%');
+            //     });
+            //     $query->orWhereHas('doctor', function ($query) use ($searchTerm) {
+            //         $query->where('name', 'like', '%' . $searchTerm . '%')
+            //             ->orWhere('id', 'like', '%' . $searchTerm . '%');
+            //     })->orWhereHas('assistants', function ($query) use ($searchTerm) {
+            //         $query->where('name', 'like', '%' . $searchTerm . '%');
+            //     });
+            // }
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('chambers.room', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('chambers.status', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(chambers.status) = ?', strtolower($statusFilter));
+            }
+            $paginationData = $query->paginate($perPage);
+            $total = Chamber::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // administrator: delete chamber
+    public function deleteChamber($id)
+    {
+        try {
+            $chamber = Chamber::findOrFail($id);
+            $chamber->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'room deleted successfully!'
+            ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+
+
+
+
+
+
     public function getDoctorsChamber()
     {
         try {
@@ -84,19 +148,7 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function deleteChamber($id)
-    {
-        try {
-            $chamber = Chamber::findOrFail($id);
-            $chamber->delete();
-            return response()->json([
-                'status' => true,
-                'message' => 'chamber deleted successfully!'
-            ], 204);
-        } catch (\Exception $e) {
-            return ExceptionHandler::handleException($e);
-        }
-    }
+
     public function updateChamberStatus(Request $request)
     {
         try {
@@ -124,7 +176,6 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
     public function updateChamber(Request $request, $id)
     {
         try {
@@ -156,67 +207,6 @@ class ChamberController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'chamber updated successfully!'
-            ], 200);
-        } catch (\Exception $e) {
-            return ExceptionHandler::handleException($e);
-        }
-    }
-    public function getChamberWithDoctorAndAssistant(Request $request)
-    {
-        try {
-            $perPage = $request->query('perPage') ?: 10;
-            $searchTerm = $request->query('searchTerm');
-            $statusFilter = $request->query('status');
-            $doctorFilter = $request->query('doctor');
-            $sortOrder = $request->query('sortOrder', 'asc');
-            $sortBy = $request->query('sortBy', 'chambers.id');
-
-            $query = Chamber::with([
-                'doctor:id,name',
-                'assistants:id,name,chamber_id'
-            ])
-                ->select(
-                    'chambers.id',
-                    'chambers.address',
-                    'chambers.status',
-                    'chambers.doctor_id'
-                )->orderBy($sortBy, $sortOrder);
-
-            if ($searchTerm) {
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('chambers.address', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('chambers.status', 'like', '%' . $searchTerm . '%');
-                });
-                $query->orWhereHas('doctor', function ($query) use ($searchTerm) {
-                    $query->where('name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('id', 'like', '%' . $searchTerm . '%');
-                })->orWhereHas('assistants', function ($query) use ($searchTerm) {
-                    $query->where('name', 'like', '%' . $searchTerm . '%');
-                });
-            }
-
-            if ($statusFilter) {
-                $query->whereRaw('LOWER(chambers.status) = ?', strtolower($statusFilter));
-            }
-            if ($doctorFilter) {
-                $query->whereHas('doctor', function ($query) use ($doctorFilter) {
-                    $query->whereRaw('LOWER(name) = ?', strtolower($doctorFilter));
-                });
-            }
-
-
-
-            $paginationData = $query->paginate($perPage);
-
-            $total = Doctor::count();
-            return response()->json([
-                'status' => true,
-                'message' => count($paginationData->items()) . " items fetched successfully!",
-                'fetchedItems' => $paginationData->total(),
-                'currentPage' => $paginationData->currentPage(),
-                'totalItems' => $total,
-                'data' => $paginationData->items()
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);

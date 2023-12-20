@@ -9,5 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Department extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'status'];
+
+    public function doctors()
+    {
+        return $this->hasMany(Doctor::class, 'department_id', 'id');
+    }
 }

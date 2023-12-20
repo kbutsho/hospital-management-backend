@@ -25,7 +25,9 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function getDoctorWithDepartment(Request $request)
+
+    // administrator: doctor list
+    public function getAllDoctorForAdministrator(Request $request)
     {
         try {
             $perPage = $request->query('perPage') ?: 10;
@@ -50,6 +52,7 @@ class DoctorController extends Controller
                     'doctors.designation as designation',
                     'departments.name as departmentName'
                 )
+                // ->with('chambers')
                 ->orderBy($sortBy, $sortOrder);
 
             if ($searchTerm) {
@@ -73,7 +76,6 @@ class DoctorController extends Controller
                 $query->whereRaw('LOWER(departments.name) = ?', strtolower($departmentFilter));
             }
             $paginationData = $query->paginate($perPage);
-
             $total = Doctor::count();
             return response()->json([
                 'status' => true,
@@ -87,6 +89,7 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator: doctor status update
     public function updateDoctorStatus(Request $request)
     {
         try {
@@ -114,6 +117,7 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator: doctor delete
     public function deleteDoctor($id)
     {
         try {
@@ -129,26 +133,23 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function getDoctorListWithChambers()
-    {
-        try {
-            // $doctorsWithActiveChambers = Doctor::with(['chambers' => function ($query) {
-            //     $query->select('id', 'address', 'doctor_id')
-            //         ->where('status', 'active');
-            // }])->select('id', 'name')->get();
 
-            $activeDoctorsWithActiveUsers = Doctor::join('users', 'users.id', '=', 'doctors.user_id')
-                ->where('users.status', 'active')
-                ->with(['chambers' => function ($query) {
-                    $query->select('id', 'address', 'doctor_id')
-                        ->where('status', 'active');
-                }])
-                ->select('doctors.id', 'doctors.name')
-                ->get();
+    // public function getDoctorListWithChambers()
+    // {
+    //     try {
 
-            return $activeDoctorsWithActiveUsers;
-        } catch (\Exception $e) {
-            return ExceptionHandler::handleException($e);
-        }
-    }
+    //         $activeDoctorsWithActiveUsers = Doctor::join('users', 'users.id', '=', 'doctors.user_id')
+    //             ->where('users.status', 'active')
+    //             ->with(['chambers' => function ($query) {
+    //                 $query->select('id', 'address', 'doctor_id')
+    //                     ->where('status', 'active');
+    //             }])
+    //             ->select('doctors.id', 'doctors.name')
+    //             ->get();
+
+    //         return $activeDoctorsWithActiveUsers;
+    //     } catch (\Exception $e) {
+    //         return ExceptionHandler::handleException($e);
+    //     }
+    // }
 }

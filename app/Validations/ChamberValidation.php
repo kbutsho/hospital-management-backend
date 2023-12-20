@@ -13,11 +13,11 @@ class ChamberValidation
     public function __construct()
     {
         $this->createOrUpdateChamberRules = [
-            'address' => 'required|max:200',
+            'room' => 'required|max:50',
         ];
         $this->createOrUpdateChamberMessages = [
-            'address.required' => 'address is required!',
-            'address.max' => 'location is too large!',
+            'room.required' => 'room is required!',
+            'room.max' => 'location is too large!',
         ];
 
         $this->updateChamberStatusRules = [
@@ -26,7 +26,7 @@ class ChamberValidation
         ];
         $this->updateChamberStatusMessages = [
             'status.required' => 'status is required!',
-            'id.required' => 'chamber id is required!',
+            'id.required' => 'room id is required!',
         ];
     }
 }

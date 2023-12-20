@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Chamber extends Model
+class AssistantUnderDoctors extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['room', 'status'];
+    protected $fillable = ['assistant_id', 'doctor_id', 'chamber_id'];
 }

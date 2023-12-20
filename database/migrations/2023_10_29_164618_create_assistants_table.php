@@ -16,8 +16,8 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->string('name');
             $table->text('address');
-            $table->bigInteger('doctor_id');
-            $table->bigInteger('chamber_id');
+            $table->integer('age');
+            $table->enum('gender', ['male', 'female', 'other']);
             $table->timestamps();
             $table->softDeletes();
         });

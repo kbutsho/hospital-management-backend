@@ -9,6 +9,9 @@ class DepartmentValidation
     public $updateDepartmentRules;
     public $updateDepartmentMessages;
 
+    public $updateDepartmentStatusRules;
+    public $updateDepartmentStatusMessages;
+
     public function __construct()
     {
         $this->createDepartmentRules = [
@@ -22,6 +25,15 @@ class DepartmentValidation
         ];
         $this->updateDepartmentMessages = [
             'name.required' => 'department name is required!'
+        ];
+
+        $this->updateDepartmentStatusRules = [
+            'id' => 'required',
+            'status' => 'required',
+        ];
+        $this->updateDepartmentStatusMessages = [
+            'status.required' => 'status is required!',
+            'id.required' => 'department id is required!',
         ];
     }
 }

@@ -14,14 +14,12 @@ return new class extends Migration
     {
         Schema::create('chambers', function (Blueprint $table) {
             $table->id();
-            $table->text('address');
+            $table->text('room');
             $table->enum('status', [
                 STATUS::ACTIVE,
                 STATUS::PENDING,
                 STATUS::DISABLE,
             ]);
-            $table->bigInteger('user_id');
-            $table->bigInteger('doctor_id');
             $table->timestamps();
             $table->softDeletes();
         });

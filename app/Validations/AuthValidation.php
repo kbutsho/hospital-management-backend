@@ -26,8 +26,13 @@ class AuthValidation
             'email' => 'required|email',
             'address' => 'required|string|max:200',
             'role' => ['required', Rule::in([ROLE::ADMINISTRATOR])],
-            'organization' => 'required|string|max:200',
-            'designation' => 'required|string|max:200',
+            'age' => 'required|integer',
+            'gender' => [
+                'required',
+                Rule::in([
+                    'male', 'female', 'other'
+                ])
+            ],
             'password' => [
                 'required',
                 'string',
@@ -57,12 +62,9 @@ class AuthValidation
             'address.max' => 'address is too large!',
             'role.required' => 'role is required!',
             'role.in' => 'invalid role selected!',
-            'organization.required' => 'organization name is required!',
-            'organization.string' => 'invalid organization information!',
-            'organization.max' => 'organization name is too large!',
-            'designation.required' => 'designation name is required!',
-            'designation.string' => 'invalid designation information!',
-            'designation.max' => 'designation name is too large!',
+            'age.required' => 'age is required!',
+            'age.integer' => 'invalid age formate!',
+            'gender.required' => 'gender is required!',
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password format!',
             'password.min' => 'must contain 10 characters!',
@@ -130,8 +132,13 @@ class AuthValidation
                     role::ASSISTANT
                 ]),
             ],
-            'doctor_id' => 'required|integer',
-            'chamber_id' => 'required|integer',
+            'age' => 'required|integer',
+            'gender' => [
+                'required',
+                Rule::in([
+                    'male', 'female', 'other'
+                ])
+            ],
             'password' => [
                 'required',
                 'string',
@@ -161,10 +168,9 @@ class AuthValidation
             'address.max' => 'address is too large!',
             'role.required' => 'role is required!',
             'role.in' => 'invalid role selected!',
-            'doctor_id.required' => 'doctor is required!',
-            'doctor_id.integer' => 'invalid doctor information!',
-            'chamber_id.required' => 'chamber is required!',
-            'chamber_id.integer' => 'invalid chamber information!',
+            'age.required' => 'age is required!',
+            'age.integer' => 'invalid age formate!',
+            'gender.required' => 'gender is required!',
             'password.required' => 'password is required!',
             'password.regex' => 'invalid password formate!',
             'password.min' => 'must contain 10 characters!',
@@ -172,40 +178,45 @@ class AuthValidation
             'confirmPassword.required' => 'confirm password is required!',
             'confirmPassword.same' => 'confirm password not match!'
         ];
-        $this->patientSignupRules = [
-            'name' => 'required|min:3|max:40',
-            'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
-            'age' => 'required|integer',
-            'gender' => 'required',
-            'blood_group_id' => 'required|integer',
-            'address' => 'required|string|max:200',
-            'emergency_contact_number' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
-            'emergency_contact_name' => 'required|min:3|max:40',
-        ];
-        $this->patientSignupMessages = [
-            'name.required' => 'name is required!',
-            'name.min' => 'name must be more than 2 characters!',
-            'name.max' => 'name must be less than 40 characters!',
-            'emergency_contact_name.required' => 'emergency contact name is required!',
-            'emergency_contact_name.min' => 'name must be more than 2 characters!',
-            'emergency_contact_name.max' => 'name must be less than 40 characters!',
-            'phone.required' => 'phone is required!',
-            'phone.regex' => 'invalid phone number!',
-            'phone.min' => 'invalid phone number!',
-            'phone.max' => 'invalid phone number!',
-            'emergency_contact_number.required' => 'emergency contact number is required!',
-            'emergency_contact_number.regex' => 'invalid phone number!',
-            'emergency_contact_number.min' => 'invalid phone number!',
-            'emergency_contact_number.max' => 'invalid phone number!',
-            'age.required' => 'age is required!',
-            'age.integer' => 'invalid age formate!',
-            'blood_group_id.required' => 'blood group is required!',
-            'blood_group_id.integer' => 'invalid blood group!',
-            'gender.required' => 'gender is required!',
-            'address.required' => 'address is required!',
-            'address.string' => 'invalid address formate!',
-            'address.max' => 'address is too large!'
-        ];
+        // $this->patientSignupRules = [
+        //     'name' => 'required|min:3|max:40',
+        //     'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
+        //     'age' => 'required|integer',
+        //     'gender' => [
+        //         'required',
+        //         Rule::in([
+        //             'male', 'female', 'other'
+        //         ])
+        //     ],
+        //     'blood_group_id' => 'required|integer',
+        //     'address' => 'required|string|max:200',
+        //     'emergency_contact_number' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
+        //     'emergency_contact_name' => 'required|min:3|max:40',
+        // ];
+        // $this->patientSignupMessages = [
+        //     'name.required' => 'name is required!',
+        //     'name.min' => 'name must be more than 2 characters!',
+        //     'name.max' => 'name must be less than 40 characters!',
+        //     'emergency_contact_name.required' => 'emergency contact name is required!',
+        //     'emergency_contact_name.min' => 'name must be more than 2 characters!',
+        //     'emergency_contact_name.max' => 'name must be less than 40 characters!',
+        //     'phone.required' => 'phone is required!',
+        //     'phone.regex' => 'invalid phone number!',
+        //     'phone.min' => 'invalid phone number!',
+        //     'phone.max' => 'invalid phone number!',
+        //     'emergency_contact_number.required' => 'emergency contact number is required!',
+        //     'emergency_contact_number.regex' => 'invalid phone number!',
+        //     'emergency_contact_number.min' => 'invalid phone number!',
+        //     'emergency_contact_number.max' => 'invalid phone number!',
+        //     'age.required' => 'age is required!',
+        //     'age.integer' => 'invalid age formate!',
+        //     'blood_group_id.required' => 'blood group is required!',
+        //     'blood_group_id.integer' => 'invalid blood group!',
+        //     'gender.required' => 'gender is required!',
+        //     'address.required' => 'address is required!',
+        //     'address.string' => 'invalid address formate!',
+        //     'address.max' => 'address is too large!'
+        // ];
         $this->loginRules = [
             'credential' => 'required',
             'password' => 'required',
