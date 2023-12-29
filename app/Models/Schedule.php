@@ -9,5 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Schedule extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['doctor_id', 'chamber_id', 'date',  'day', 'opening_time', 'close_time'];
+    protected $fillable = ['doctor_id', 'chamber_id', 'day',  'status', 'details', 'opening_time', 'closing_time'];
 }

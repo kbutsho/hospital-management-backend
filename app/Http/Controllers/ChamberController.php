@@ -212,4 +212,20 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+
+    public function getAllActiveRoom()
+    {
+        try {
+            $rooms = Chamber::where('status', 'active')
+                ->select('chambers.room as room')
+                ->get();
+            return response()->json([
+                'status' => true,
+                'message' => 'rooms retrieved successfully!',
+                'data' => $rooms,
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
 }

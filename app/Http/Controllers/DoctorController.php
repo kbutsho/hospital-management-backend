@@ -12,10 +12,13 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    public function getAllDoctor()
+    public function getAllActiveDoctor()
     {
         try {
-            $doctors = Doctor::all();
+            $doctors = User::where('role', 'doctor')
+                ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                ->where('users.status', 'active')
+                ->get();
             return response()->json([
                 'status' => true,
                 'message' => 'doctors retrieved successfully!',

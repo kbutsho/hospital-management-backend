@@ -60,7 +60,7 @@ class DepartmentController extends Controller
     //         return ExceptionHandler::handleException($e);
     //     }
     // }
-    public function getActiveDepartmentList()
+    public function getActiveDepartment()
     {
         try {
             $data = Department::select('id', 'name')

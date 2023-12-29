@@ -2,6 +2,9 @@
 
 namespace App\Validations;
 
+use App\Helpers\STATUS;
+use Illuminate\Validation\Rule;
+
 class ScheduleValidation
 {
     public $createScheduleRules;
@@ -10,27 +13,25 @@ class ScheduleValidation
     public function __construct()
     {
         $this->createScheduleRules = [
-            'doctor_id' => 'required|integer',
-            'chamber_id' => 'required|integer',
-            'date' => 'required|date|date_format:d-m-Y',
-            'day' => 'required|string',
-            'opening_time' => 'required|date_format:h:i A',
-            'close_time' => 'required|date_format:h:i A',
+            'data*.doctor_id' => 'required|integer',
+            'data*.chamber_id' => 'required|integer',
+            'data*.day' => 'required|string',
+            'data*.status' => ['required', Rule::in([STATUS::ACTIVE, STATUS::PENDING])],
+            'data*.opening_time' => 'required|date_format:H:i',
+            'data*.closing_time' => 'required|date_format:H:i',
         ];
         $this->createScheduleMessages = [
-            'doctor_id.required' => 'doctor information is required!',
-            'doctor_id.integer' => 'invalid doctor information!',
-            'chamber_id.required' => 'chamber information is required!',
-            'chamber_id.integer' => 'invalid chamber information!',
-            'date.required' => 'date is required!',
-            'date.date' => 'invalid date information!',
-            'date.date_format' => 'invalid date formation!',
-            'day.required' => 'day is required!',
-            'day.string' => 'invalid day information!',
-            'opening_time.required' => 'opening time is required!',
-            'opening_time.date_format' => 'invalid opening time format!',
-            'close_time.required' => 'close time is required!',
-            'close_time.date_format' => 'invalid close time format!',
+            'data*.doctor_id.required' => 'doctor information is required!',
+            'data*.doctor_id.integer' => 'invalid doctor information!',
+            'data*.chamber_id.required' => 'chamber information is required!',
+            'data*.chamber_id.integer' => 'invalid chamber information!',
+            'data*.day.required' => 'day is required!',
+            'data*.day.string' => 'invalid day information!',
+            'data*.status.required' => 'status is required!',
+            'data*.opening_time.required' => 'opening time is required!',
+            'data*.opening_time.date_format' => 'invalid opening time format!',
+            'data*.closing_time.required' => 'close time is required!',
+            'data*.closing_time.date_format' => 'invalid close time format!',
         ];
     }
 }
