@@ -131,8 +131,7 @@ class ScheduleController extends Controller
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('schedules.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('schedules.status', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('schedules.opening_time', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('schedules.closing_time', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('schedules.day', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('chambers.id', 'like', '%' . $searchTerm . '%')
@@ -209,6 +208,46 @@ class ScheduleController extends Controller
             ], 200);
         } catch (\Exception $e) {
             // Handle any exceptions
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function deleteSchedule($id)
+    {
+        try {
+            $data = Schedule::findOrFail($id);
+            $data->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'deleted successfully!'
+            ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function updateScheduleStatus(Request $request)
+    {
+        try {
+            $validation = new ScheduleValidation();
+            $rules = $validation->updateScheduleStatusRules;
+            $messages = $validation->updateScheduleStatusMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $isExist = Schedule::where('id', '=', $request->id)->first();
+            if ($isExist) {
+                $isExist->status = $request->status;
+                $isExist->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'status updated successfully!',
+                ], 200);
+            }
+            return response()->json([
+                'status' => false,
+                'message' => 'schedule not found!',
+            ], 404);
+        } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
     }

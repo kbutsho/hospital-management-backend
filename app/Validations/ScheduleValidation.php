@@ -10,6 +10,9 @@ class ScheduleValidation
     public $createScheduleRules;
     public $createScheduleMessages;
 
+    public $updateScheduleStatusRules;
+    public $updateScheduleStatusMessages;
+
     public function __construct()
     {
         $this->createScheduleRules = [
@@ -32,6 +35,16 @@ class ScheduleValidation
             'data*.opening_time.date_format' => 'invalid opening time format!',
             'data*.closing_time.required' => 'close time is required!',
             'data*.closing_time.date_format' => 'invalid close time format!',
+        ];
+
+
+        $this->updateScheduleStatusRules = [
+            'id' => 'required',
+            'status' => 'required',
+        ];
+        $this->updateScheduleStatusMessages = [
+            'status.required' => 'status is required!',
+            'id.required' => 'schedule id is required!',
         ];
     }
 }

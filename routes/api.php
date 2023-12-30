@@ -67,6 +67,8 @@ Route::prefix('administrator')->group(function () {
         Route::post('/schedule/create', [ScheduleController::class, 'createSchedule']);
         Route::get('/schedule/all', [ScheduleController::class, 'getAllScheduleWithDoctorAndChamber']);
         Route::get('/schedule/time-slots', [ScheduleController::class, 'getAllTimeSlot']);
+        Route::delete('/schedule/{id}', [ScheduleController::class, 'deleteSchedule']);
+        Route::post('/schedule/update/status', [ScheduleController::class, 'updateScheduleStatus']);
     });
 });
 
