@@ -18,4 +18,4 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/', [ScheduleController::class, 'getAllTimeSlot']);
+Route::get('/', [ScheduleController::class, 'createSchedule']);

@@ -54,24 +54,62 @@ class ScheduleController extends Controller
                 return ValidationHandler::handleValidation($validator);
             }
             //end validation
+            // $scheduleData = $request->input('data');
+            // foreach ($scheduleData as $data) {
+            //     Schedule::create([
+            //         'doctor_id' => $data['doctor_id'],
+            //         'chamber_id' => $data['chamber_id'],
+            //         'day' => $data['day'],
+            //         'opening_time' => $data['opening_time'],
+            //         'closing_time' => $data['closing_time'],
+            //         'status' => STATUS::ACTIVE,
+            //         'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+            //     ]);
+            // }
+            //     'status' => 'success',
+            //     'message' => 'schedule created successfully!',
+            // ], 201);
 
             $scheduleData = $request->input('data');
-            foreach ($scheduleData as $data) {
-                Schedule::create([
-                    'doctor_id' => $data['doctor_id'],
-                    'chamber_id' => $data['chamber_id'],
-                    'day' => $data['day'],
-                    'opening_time' => $data['opening_time'],
-                    'closing_time' => $data['closing_time'],
-                    'status' => STATUS::ACTIVE,
-                    'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
-                ]);
-                // date("H:i:s", strtotime($data['opening_time']));
+            $invalidSchedules = [];
 
+            foreach ($scheduleData as $data) {
+                $openingTime = strtotime($data['opening_time']);
+                $closingTime = strtotime($data['closing_time']);
+
+                if ($openingTime >= $closingTime) {
+                    $invalidSchedules[] = [
+                        'doctor_id' => $data['doctor_id'],
+                        'chamber_id' => $data['chamber_id'],
+                        'day' => $data['day'],
+                        'opening_time' => $data['opening_time'],
+                        'closing_time' => $data['closing_time'],
+                        'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+                    ];
+                } else {
+                    Schedule::create([
+                        'doctor_id' => $data['doctor_id'],
+                        'chamber_id' => $data['chamber_id'],
+                        'day' => $data['day'],
+                        'opening_time' => $data['opening_time'],
+                        'closing_time' => $data['closing_time'],
+                        'status' => STATUS::ACTIVE,
+                        'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+                    ]);
+                }
             }
+
+            if (!empty($invalidSchedules)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'schedules closing time should be greater opening time!',
+                    'error' => $invalidSchedules
+                ], 422);
+            }
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'schedule created successfully!',
+                'message' => 'Schedule created successfully!',
             ], 201);
         }
         // handel exceptional error
