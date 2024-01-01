@@ -53,6 +53,7 @@ class ScheduleController extends Controller
             if ($validator->fails()) {
                 return ValidationHandler::handleValidation($validator);
             }
+            // between opening and closing time and day doctor already assigned other room or not
             //end validation
             // $scheduleData = $request->input('data');
             // foreach ($scheduleData as $data) {
@@ -111,6 +112,76 @@ class ScheduleController extends Controller
                 'status' => 'success',
                 'message' => 'Schedule created successfully!',
             ], 201);
+
+            // $scheduleData = $request->input('data');
+            // $invalidSchedules = [];
+            // $createdSchedules = [];
+
+            // foreach ($scheduleData as $data) {
+            //     $doctorId = $data['doctor_id'];
+            //     $chamberId = $data['chamber_id'];
+            //     $day = $data['day'];
+            //     $openingTime = strtotime($data['opening_time']);
+            //     $closingTime = strtotime($data['closing_time']);
+
+            //     // Check if opening time is greater than or equal to closing time
+            //     if ($openingTime >= $closingTime) {
+            //         $invalidSchedules[] = [
+            //             'doctor_id' => $doctorId,
+            //             'chamber_id' => $chamberId,
+            //             'day' => $day,
+            //             'opening_time' => $data['opening_time'],
+            //             'closing_time' => $data['closing_time'],
+            //             'details' => $day . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+            //         ];
+            //     } else {
+            //         // Check for overlapping schedules
+            //         $overlappingSchedule = Schedule::where('doctor_id', $doctorId)
+            //             ->where('chamber_id', $chamberId)
+            //             ->where('day', $day)
+            //             ->where(function ($query) use ($openingTime, $closingTime) {
+            //                 $query->whereBetween('opening_time', [$openingTime, $closingTime])
+            //                     ->orWhereBetween('closing_time', [$openingTime, $closingTime]);
+            //             })
+            //             ->first();
+
+            //         if ($overlappingSchedule) {
+            //             $invalidSchedules[] = [
+            //                 'doctor_id' => $doctorId,
+            //                 'chamber_id' => $chamberId,
+            //                 'day' => $day,
+            //                 'opening_time' => $data['opening_time'],
+            //                 'closing_time' => $data['closing_time'],
+            //                 'details' => 'Overlaps with an existing schedule: ' . $overlappingSchedule->details
+            //             ];
+            //         } else {
+            //             $createdSchedule = Schedule::create([
+            //                 'doctor_id' => $doctorId,
+            //                 'chamber_id' => $chamberId,
+            //                 'day' => $day,
+            //                 'opening_time' => $data['opening_time'],
+            //                 'closing_time' => $data['closing_time'],
+            //                 'status' => STATUS::ACTIVE,
+            //                 'details' => $day . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+            //             ]);
+            //             $createdSchedules[] = $createdSchedule;
+            //         }
+            //     }
+            // }
+
+            // if (!empty($invalidSchedules)) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'Invalid schedules found!',
+            //         'error' => $invalidSchedules
+            //     ], 422);
+            // }
+
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'Schedules created successfully!',
+            //     'data' => $createdSchedules
+            // ], 201);
         }
         // handel exceptional error
         catch (\Exception $e) {
