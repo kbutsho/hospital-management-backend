@@ -67,6 +67,7 @@ class ChamberController extends Controller
 
             $query = Chamber::select('chambers.id', 'chambers.room', 'chambers.status')
                 ->orderBy($sortBy, $sortOrder);
+
             // if ($searchTerm) {
             //     $query->where(function ($q) use ($searchTerm) {
             //         $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
@@ -224,6 +225,28 @@ class ChamberController extends Controller
                 'message' => 'rooms retrieved successfully!',
                 'data' => $rooms,
             ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getChamberDetails($id)
+    {
+        try {
+            $chamber = Chamber::with(['schedules', 'schedules.doctor'])->find($id);
+
+
+            if ($chamber) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'chamber found successfully!',
+                    'data' => $chamber
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'invalid chamber id!',
+                ], 404);
+            }
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
