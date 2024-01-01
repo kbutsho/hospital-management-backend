@@ -10,4 +10,9 @@ class Chamber extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['room', 'status'];
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'chamber_id', 'id');
+    }
 }
