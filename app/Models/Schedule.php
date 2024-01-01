@@ -10,4 +10,9 @@ class Schedule extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['doctor_id', 'chamber_id', 'day',  'status', 'details', 'opening_time', 'closing_time'];
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'id');
+    }
 }

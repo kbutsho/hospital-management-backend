@@ -55,6 +55,7 @@ Route::prefix('administrator')->group(function () {
         Route::get('/chamber/all', [ChamberController::class, 'getAdministratorChamber']);
         Route::post('/chamber/update/status', [ChamberController::class, 'updateChamberStatus']);
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
+        Route::get('/chamber/{id}', [ChamberController::class, 'getChamberDetails']);
 
         Route::post('/department/create', [DepartmentController::class, 'createDepartment']);
         Route::get('/department/all', [DepartmentController::class, 'getAllDepartmentWithDoctors']);
