@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\VisitingHourController;
@@ -25,6 +26,7 @@ Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
 Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAndChamberForCreateSchedule']);
+Route::get('/patient/{phone}', [PatientController::class, 'getPatientByPhone']);
 
 Route::prefix('doctor')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
