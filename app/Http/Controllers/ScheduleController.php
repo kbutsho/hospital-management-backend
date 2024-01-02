@@ -41,6 +41,28 @@ class ScheduleController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    public function getDoctorsAndSchedulesForSerial()
+    {
+        try {
+            $doctors = User::where('role', 'doctor')
+                ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                ->where('users.status', 'active')
+                ->select('doctors.name', 'doctors.id')
+                ->get();
+
+            $schedules = Schedule::where('status', '=', 'active')->get();
+            return response()->json([
+                'status' => true,
+                'message' => 'data retrieved successfully!',
+                'data' => [
+                    'doctors' => $doctors,
+                    'schedules' => $schedules
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
     // administrator: create schedule
     public function createSchedule(Request $request)
     {

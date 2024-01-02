@@ -15,7 +15,8 @@ class DoctorController extends Controller
     public function getAllActiveDoctor()
     {
         try {
-            $doctors = User::where('role', 'doctor')
+            $doctors = User::select('doctors.name', 'doctors.id')
+                ->where('role', 'doctor')
                 ->join('doctors', 'users.id', '=', 'doctors.user_id')
                 ->where('users.status', 'active')
                 ->get();
