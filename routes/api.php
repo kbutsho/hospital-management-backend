@@ -26,6 +26,7 @@ Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
 Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAndChamberForCreateSchedule']);
+Route::get('/serial/doctor-schedule', [ScheduleController::class, 'getDoctorsAndSchedulesForSerial']);
 Route::get('/patient/{phone}', [PatientController::class, 'getPatientByPhone']);
 
 Route::prefix('doctor')->group(function () {
