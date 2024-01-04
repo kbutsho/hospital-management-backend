@@ -9,6 +9,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SerialController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
@@ -26,8 +27,9 @@ Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
 Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAndChamberForCreateSchedule']);
-Route::get('/serial/doctor-schedule', [ScheduleController::class, 'getDoctorsAndSchedulesForSerial']);
+Route::get('/serial/department-doctor-schedule', [ScheduleController::class, 'getDepartmentsDoctorsAndSchedulesForSerial']);
 Route::get('/patient/{phone}', [PatientController::class, 'getPatientByPhone']);
+Route::post('/patient/serial/create', [SerialController::class, 'createSerial']);
 
 Route::prefix('doctor')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
