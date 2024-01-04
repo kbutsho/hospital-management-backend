@@ -6,6 +6,7 @@ use App\Helpers\ExceptionHandler;
 use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
 use App\Models\Chamber;
+use App\Models\Department;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Validations\ScheduleValidation;
@@ -41,22 +42,24 @@ class ScheduleController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function getDoctorsAndSchedulesForSerial()
+    public function getDepartmentsDoctorsAndSchedulesForSerial()
     {
         try {
             $doctors = User::where('role', 'doctor')
                 ->join('doctors', 'users.id', '=', 'doctors.user_id')
                 ->where('users.status', 'active')
-                ->select('doctors.name', 'doctors.id')
+                ->select('doctors.id', 'doctors.name', 'doctors.department_id')
                 ->get();
 
             $schedules = Schedule::where('status', '=', 'active')->get();
+            $departments = Department::where('status', '=', 'active')->get();
             return response()->json([
                 'status' => true,
                 'message' => 'data retrieved successfully!',
                 'data' => [
                     'doctors' => $doctors,
-                    'schedules' => $schedules
+                    'schedules' => $schedules,
+                    'departments' => $departments
                 ]
             ], 200);
         } catch (\Exception $e) {
