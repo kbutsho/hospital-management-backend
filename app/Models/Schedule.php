@@ -15,4 +15,13 @@ class Schedule extends Model
     {
         return $this->belongsTo(Doctor::class, 'doctor_id', 'id');
     }
+    public function serial()
+    {
+        return $this->hasOne(Serial::class);
+    }
+
+    public function chamber()
+    {
+        return $this->belongsTo(Chamber::class);
+    }
 }

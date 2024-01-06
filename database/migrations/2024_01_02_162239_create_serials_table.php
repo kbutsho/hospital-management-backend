@@ -18,7 +18,12 @@ return new class extends Migration
             $table->integer('age');
             $table->text('address');
             $table->bigInteger('doctor_id');
-            $table->dateTime('datetime');
+            $table->bigInteger('department_id');
+            $table->bigInteger('schedule_id');
+            $table->date('date');
+            $table->string('day');
+            $table->time('opening_time');
+            $table->time('closing_time');
             $table->timestamps();
             $table->softDeletes();
         });
