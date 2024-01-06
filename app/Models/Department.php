@@ -15,4 +15,8 @@ class Department extends Model
     {
         return $this->hasMany(Doctor::class, 'department_id', 'id');
     }
+    public function serials()
+    {
+        return $this->hasMany(Serial::class);
+    }
 }
