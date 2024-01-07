@@ -45,21 +45,6 @@ class DepartmentController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    // public function getAllDepartment()
-    // {
-    //     try {
-    //         $data = Department::select('id', 'name')
-    //             ->where('status', 'active')
-    //             ->get();
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'department retrieved successfully!',
-    //             'data' => $data,
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         return ExceptionHandler::handleException($e);
-    //     }
-    // }
     public function getActiveDepartment()
     {
         try {
@@ -81,7 +66,7 @@ class DepartmentController extends Controller
             $perPage = $request->query('perPage') ?: 10;
             $searchTerm = $request->query('searchTerm');
             $statusFilter = $request->query('status');
-            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'departments.id');
 
             $query = Department::select('departments.id', 'departments.name', 'departments.status')
