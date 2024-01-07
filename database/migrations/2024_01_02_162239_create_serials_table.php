@@ -22,6 +22,7 @@ return new class extends Migration
             $table->bigInteger('schedule_id');
             $table->date('date');
             $table->string('day');
+            $table->enum('payment_status', ['paid', 'unpaid']);
             $table->time('opening_time');
             $table->time('closing_time');
             $table->timestamps();
