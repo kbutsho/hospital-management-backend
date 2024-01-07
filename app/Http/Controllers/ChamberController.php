@@ -62,7 +62,7 @@ class ChamberController extends Controller
             $perPage = $request->query('perPage') ?: 10;
             $searchTerm = $request->query('searchTerm');
             $statusFilter = $request->query('status');
-            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'chambers.id');
 
             $query = Chamber::select('chambers.id', 'chambers.room', 'chambers.status')
