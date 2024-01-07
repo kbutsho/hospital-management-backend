@@ -75,8 +75,8 @@ class AuthController extends Controller
             if ($request->role === ROLE::ADMINISTRATOR) {
                 $admin = new Administrator();
                 $admin->user_id = $user->id;
-                $admin->name = $request->name;
-                $admin->address = $request->address;
+                $admin->name = strtoupper($request->name);
+                $admin->address = strtoupper($request->address);
                 $admin->age = intval($request->age);
                 $admin->gender = $request->gender;
                 $admin->save();
@@ -210,7 +210,7 @@ class AuthController extends Controller
             if ($request->role === ROLE::DOCTOR) {
                 $doctor = new Doctor();
                 $doctor->user_id = $user->id;
-                $doctor->name = $request->name;
+                $doctor->name = strtoupper($request->name);
                 $doctor->bmdc_id = $request->bmdc_id;
                 $doctor->designation = $request->designation;
                 $doctor->department_id = intval($request->department_id);
@@ -302,8 +302,8 @@ class AuthController extends Controller
             if ($request->role === ROLE::ASSISTANT) {
                 $assistant = new Assistant();
                 $assistant->user_id = $user->id;
-                $assistant->name = $request->name;
-                $assistant->address = $request->address;
+                $assistant->name = strtoupper($request->name);
+                $assistant->address = strtoupper($request->address);
                 $assistant->age = intval($request->age);
                 $assistant->gender = $request->gender;
                 $assistant->save();
@@ -363,8 +363,8 @@ class AuthController extends Controller
             // create new patient
             $patient = new Patient();
             $patient->user_id = $user->id;
-            $patient->name = $request->name;
-            $patient->address = $request->address;
+            $patient->name = strtoupper($request->name);
+            $patient->address = strtoupper($request->address);
             $patient->age = intval($request->age);
             $patient->blood_group_id = intval($request->blood_group_id);
             $patient->emergency_contact_name = $request->emergency_contact_name;

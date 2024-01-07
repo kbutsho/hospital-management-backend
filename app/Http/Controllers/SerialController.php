@@ -82,3 +82,15 @@ class SerialController extends Controller
         }
     }
 }
+
+
+/*
+serial: payment_status: paid, unpaid
+appointment: serial_id, serial_no
+patient: (phone, name, address) unique 
+
+
+
+
+
+*/
