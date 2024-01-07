@@ -13,11 +13,8 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
-            $table->bigInteger('patient_id');
-            $table->bigInteger('doctor_id');
-            $table->bigInteger('chamber_id');
-            $table->datetime('datetime');
+            $table->bigInteger('serial_id');
+            $table->bigInteger('serial_number');
             $table->timestamps();
             $table->softDeletes();
         });
