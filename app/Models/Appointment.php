@@ -9,11 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Appointment extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = [
-        'user_id',
-        'patient_id',
-        'doctor_id',
-        'chamber_id',
-        'datetime'
-    ];
+    protected $fillable = ['serial_id', 'serial_number'];
 }
