@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\ROLE;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
@@ -22,7 +21,6 @@ Route::prefix('signup')->group(function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/appointment-registration', [AppointmentController::class, 'createAppointment']);
 Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment']);
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
