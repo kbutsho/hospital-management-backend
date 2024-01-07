@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Serial extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['name', 'phone', 'age', 'address', 'doctor_id', 'department_id', 'schedule_id', 'date', 'day', 'payment_status', 'opening_time', 'closing_time'];
+    protected $fillable = ['name', 'phone', 'age', 'address', 'schedule_id', 'doctor_id', 'department_id', 'date', 'payment_status'];
 
     public function doctor()
     {

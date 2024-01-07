@@ -110,7 +110,6 @@ class ScheduleController extends Controller
                         'day' => $data['day'],
                         'opening_time' => $data['opening_time'],
                         'closing_time' => $data['closing_time'],
-                        'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
                     ];
                 } else {
                     Schedule::create([
@@ -119,8 +118,7 @@ class ScheduleController extends Controller
                         'day' => $data['day'],
                         'opening_time' => $data['opening_time'],
                         'closing_time' => $data['closing_time'],
-                        'status' => STATUS::ACTIVE,
-                        'details' => $data['day'] . ' ' . $data['opening_time'] . ' - ' . $data['closing_time']
+                        'status' => STATUS::ACTIVE
                     ]);
                 }
             }

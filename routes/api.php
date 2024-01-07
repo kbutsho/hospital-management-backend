@@ -28,6 +28,7 @@ Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAnd
 Route::get('/serial/department-doctor-schedule', [ScheduleController::class, 'getDepartmentsDoctorsAndSchedulesForSerial']);
 Route::get('/patient/{phone}', [PatientController::class, 'getPatientByPhone']);
 Route::post('/patient/serial/create', [SerialController::class, 'createSerial']);
+Route::get('/patient/serial/{id}', [SerialController::class, 'getSerialById']);
 
 Route::prefix('doctor')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {

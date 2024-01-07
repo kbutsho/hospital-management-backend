@@ -17,7 +17,7 @@ class SerialValidation
             'doctor_id' => 'required',
             'department_id' => 'required',
             'date' => 'required',
-            'schedule' => 'required',
+            'schedule_id' => 'required',
         ];
         $this->createSerialMessages = [
             'name.required' => 'name is required!',
@@ -27,7 +27,7 @@ class SerialValidation
             'phone.required' => 'phone is required!',
             'address.required' => 'address is required!',
             'date.required' => 'date is required!',
-            'schedule.required' => 'schedule is required!',
+            'schedule_id.required' => 'schedule is required!',
             'doctor_id.required' => 'doctor is required!',
             'department_id.required' => 'department is required!',
         ];
