@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('age');
             $table->text('address');
             $table->string('gender')->nullable();
+            $table->string('email')->nullable();
             $table->string('emergency_contact_name')->nullable();
             $table->string('emergency_contact_number')->nullable();
             $table->bigInteger('blood_group_id')->nullable();
