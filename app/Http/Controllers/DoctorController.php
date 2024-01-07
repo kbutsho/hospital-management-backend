@@ -38,7 +38,7 @@ class DoctorController extends Controller
             $searchTerm = $request->query('searchTerm');
             $statusFilter = $request->query('status');
             $departmentFilter = $request->query('department');
-            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'users.id');
 
             $query = User::where('role', 'doctor')
@@ -74,7 +74,7 @@ class DoctorController extends Controller
                 });
             }
             if ($statusFilter) {
-                $query->whereRaw('LOWER(status) = ?', strtolower($statusFilter));
+                $query->whereRaw('LOWER(users.status) = ?', strtolower($statusFilter));
             }
             if ($departmentFilter) {
                 $query->whereRaw('LOWER(departments.name) = ?', strtolower($departmentFilter));
