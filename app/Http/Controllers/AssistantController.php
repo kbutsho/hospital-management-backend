@@ -8,24 +8,25 @@ use App\Models\Assistant;
 use App\Models\User;
 use App\Validations\AssistantValidation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AssistantController extends Controller
 {
-    public function getAllAssistantWithDoctorAndChamber(Request $request)
+    public function getAllAssistantWithChamber(Request $request)
     {
         try {
             $perPage = $request->query('perPage') ?: 10;
             $searchTerm = $request->query('searchTerm');
             $statusFilter = $request->query('status');
-            $doctorFilter = $request->query('doctor');
-            $sortOrder = $request->query('sortOrder', 'asc');
+            $roomFilter = $request->query('room');
+            $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'users.id');
 
             $query = User::where('role', 'assistant')
                 ->join('assistants', 'users.id', '=', 'assistants.user_id')
-                ->join('doctors', 'doctors.id', '=', 'assistants.doctor_id')
-                ->join('chambers', 'chambers.id', '=', 'assistants.chamber_id')
+                ->leftJoin('assigned_assistants', 'assistants.id', '=', 'assigned_assistants.assistant_id')
+                ->leftJoin('chambers', 'assigned_assistants.chamber_id', '=', 'chambers.id')
                 ->select(
                     'users.id as userId',
                     'users.email',
@@ -34,8 +35,7 @@ class AssistantController extends Controller
                     'assistants.id as assistantId',
                     'assistants.name',
                     'assistants.address',
-                    'doctors.name as doctorName',
-                    'chambers.address as chamberAddress',
+                    DB::raw('COALESCE(chambers.room, "null") as room')
                 )
                 ->orderBy($sortBy, $sortOrder);
 
@@ -47,16 +47,15 @@ class AssistantController extends Controller
                         ->orWhere('assistants.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('assistants.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('assistants.address', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('users.status', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('chambers.address', 'like', '%' . $searchTerm . '%');
+                        ->orWhere('chambers.room', 'like', '%' . $searchTerm . '%');
                 });
             }
             if ($statusFilter) {
                 $query->whereRaw('LOWER(users.status) = ?', strtolower($statusFilter));
             }
-            if ($doctorFilter) {
-                $query->whereRaw('LOWER(doctors.name) = ?', strtolower($doctorFilter));
+            if ($roomFilter) {
+                $query->whereRaw('LOWER(chambers.room) = ?', strtolower($roomFilter));
             }
             $paginationData = $query->paginate($perPage);
             $total = Assistant::count();

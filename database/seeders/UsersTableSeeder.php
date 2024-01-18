@@ -34,8 +34,16 @@ class UsersTableSeeder extends Seeder
 
 
             // assistant
-
-
+            ['phone' => '017149555016', 'email' => 'as.sushmita@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555017', 'email' => 'as.ishita@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555018', 'email' => 'as.priya@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555019', 'email' => 'as.liton@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555020', 'email' => 'as.habib@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555021', 'email' => 'as.dipankar@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555022', 'email' => 'as.dipta@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555023', 'email' => 'as.rakhi@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555024', 'email' => 'as.parag@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()],
+            ['phone' => '017149555025', 'email' => 'as.kaushik@gmail.com', 'role' => ROLE::ASSISTANT, 'status' => STATUS::ACTIVE, 'password' => Hash::make('Hospital@1234'), 'created_at' => now(), 'updated_at' => now()]
         ];
         User::insert($users);
     }

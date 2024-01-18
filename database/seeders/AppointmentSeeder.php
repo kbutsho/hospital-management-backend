@@ -13,7 +13,7 @@ class AppointmentSeeder extends Seeder
     public function run(): void
     {
         $appointments = [
-            ['serial_id' => 1, 'serial_number' => 1, 'created_at' => now(), 'updated_at' => now()]
+            ['serial_id' => 1, 'serial_number' => 1, 'patient_id' => 1, 'created_at' => now(), 'updated_at' => now()]
         ];
         Appointment::insert($appointments);
     }

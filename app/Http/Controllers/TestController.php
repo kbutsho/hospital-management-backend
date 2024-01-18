@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ExceptionHandler;
 use App\Helpers\STATUS;
 use App\Models\Test;
+use App\Models\Text;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -163,6 +164,21 @@ class TestController extends Controller
                 'message' => 'data deleted successfully!',
                 'data' => $data
             ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function createText(Request $request)
+    {
+        try {
+            $text = new Text();
+            $text->content = $request->content;
+            $text->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'text created successfully!',
+                'data' => $text
+            ], 201);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

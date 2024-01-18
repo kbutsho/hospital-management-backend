@@ -51,7 +51,7 @@ Route::prefix('administrator')->group(function () {
         Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 
 
-        Route::get('/assistant/all', [AssistantController::class, 'getAllAssistantWithDoctorAndChamber']);
+        Route::get('/assistant/all', [AssistantController::class, 'getAllAssistantWithChamber']);
         Route::post('/assistant/update/status', [AssistantController::class, 'updateAssistantStatus']);
         Route::delete('/assistant/{id}', [AssistantController::class, 'deleteAssistant']);
 
@@ -82,3 +82,4 @@ Route::get('/test/all', [TestController::class, 'get']);
 Route::get('/test', [TestController::class, 'getAll']);
 Route::patch('/test/{id}', [TestController::class, 'update']);
 Route::delete('/test/{id}', [TestController::class, 'delete']);
+Route::post('/text/create', [TestController::class, 'createText']);

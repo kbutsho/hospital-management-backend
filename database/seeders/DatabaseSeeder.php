@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,5 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SerialSeeder::class);
         $this->call(AppointmentSeeder::class);
         $this->call(PatientSeeder::class);
+        $this->call(AssistantSeeder::class);
+        $this->call(AssignedAssistantSeeder::class);
     }
 }
