@@ -63,16 +63,16 @@ class DepartmentController extends Controller
     public function getAllDepartmentWithDoctors(Request $request)
     {
         try {
-            $perPage = $request->query('perPage') ?: 10;
+            $perPage = $request->query('perPage') ?: 5;
             $searchTerm = $request->query('searchTerm');
             $statusFilter = $request->query('status');
             $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'departments.id');
 
             $query = Department::select('departments.id', 'departments.name', 'departments.status')
-                ->selectRaw('SUM(users.status = "active") as activeDoctor')
-                ->selectRaw('SUM(users.status = "pending") as pendingDoctor')
-                ->selectRaw('SUM(users.status = "disable") as disableDoctor')
+                ->selectRaw('CAST(SUM(users.status = "active") AS SIGNED) as activeDoctor')
+                ->selectRaw('CAST(SUM(users.status = "pending") AS SIGNED) as pendingDoctor')
+                ->selectRaw('CAST(SUM(users.status = "disable") AS SIGNED) as disableDoctor')
                 ->leftJoin('doctors', 'departments.id', '=', 'doctors.department_id')
                 ->leftJoin('users', 'doctors.user_id', '=', 'users.id')
                 ->groupBy('departments.id', 'departments.name', 'departments.status')
