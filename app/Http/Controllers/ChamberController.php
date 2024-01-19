@@ -68,19 +68,6 @@ class ChamberController extends Controller
             $query = Chamber::select('chambers.id', 'chambers.room', 'chambers.status')
                 ->orderBy($sortBy, $sortOrder);
 
-            // if ($searchTerm) {
-            //     $query->where(function ($q) use ($searchTerm) {
-            //         $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
-            //             ->orWhere('chambers.room', 'like', '%' . $searchTerm . '%')
-            //             ->orWhere('chambers.status', 'like', '%' . $searchTerm . '%');
-            //     });
-            //     $query->orWhereHas('doctor', function ($query) use ($searchTerm) {
-            //         $query->where('name', 'like', '%' . $searchTerm . '%')
-            //             ->orWhere('id', 'like', '%' . $searchTerm . '%');
-            //     })->orWhereHas('assistants', function ($query) use ($searchTerm) {
-            //         $query->where('name', 'like', '%' . $searchTerm . '%');
-            //     });
-            // }
             if ($searchTerm) {
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('chambers.id', 'like', '%' . $searchTerm . '%')
