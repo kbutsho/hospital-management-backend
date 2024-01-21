@@ -50,7 +50,6 @@ Route::prefix('administrator')->group(function () {
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
         Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 
-
         Route::get('/assistant/all', [AssistantController::class, 'getAllAssistantWithChamber']);
         Route::post('/assistant/update/status', [AssistantController::class, 'updateAssistantStatus']);
         Route::delete('/assistant/{id}', [AssistantController::class, 'deleteAssistant']);
@@ -67,13 +66,13 @@ Route::prefix('administrator')->group(function () {
         Route::delete('/department/{id}', [DepartmentController::class, 'deleteDepartment']);
         Route::patch('/department/{id}', [DepartmentController::class, 'updateDepartment']);
 
-
-
         Route::post('/schedule/create', [ScheduleController::class, 'createSchedule']);
         Route::get('/schedule/all', [ScheduleController::class, 'getAllScheduleWithDoctorAndChamber']);
         Route::get('/schedule/time-slots', [ScheduleController::class, 'getAllTimeSlot']);
         Route::delete('/schedule/{id}', [ScheduleController::class, 'deleteSchedule']);
         Route::post('/schedule/update/status', [ScheduleController::class, 'updateScheduleStatus']);
+
+        Route::get('/serial/all', [SerialController::class, 'getSerials']);
     });
 });
 
