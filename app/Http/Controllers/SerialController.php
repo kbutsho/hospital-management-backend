@@ -67,8 +67,6 @@ class SerialController extends Controller
             // $roomNumber =  $serialInfo->schedule->chamber->room;
             // $openingTime = $serialInfo->schedule->opening_time;
             // $day = $serialInfo->schedule->day;
-
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'serial created successfully!',
@@ -113,6 +111,34 @@ class SerialController extends Controller
                     'message' => 'serial not found!',
                 ], 400);
             }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getSerials(Request $request)
+    {
+        try {
+            $serial = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
+                ->join('departments', 'serials.department_id', 'departments.id')
+                ->join('schedules', 'serials.schedule_id', 'schedules.id')
+                ->select(
+                    'serials.id',
+                    'serials.name',
+                    'serials.phone',
+                    'serials.age',
+                    'serials.date',
+                    'serials.payment_status',
+                    'doctors.name as doctorName',
+                    'departments.name as departmentName',
+                    'schedules.opening_time',
+                    'schedules.day'
+                )->get();
+            // here i need doctors.name departments.name schedules.time
+            return response()->json([
+                'status' => 'success',
+                'message' => 'serial fetched successfully!',
+                'data' => $serial
+            ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
