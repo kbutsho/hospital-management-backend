@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
-use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
-use App\Models\DoctorFee;
+use App\Models\DoctorsFee;
 use App\Models\Serial;
 use App\Validations\SerialValidation;
 use Carbon\Carbon;
@@ -90,7 +89,7 @@ class SerialController extends Controller
                 $openingTime = $serialInfo->schedule->opening_time;
                 $day = $serialInfo->schedule->day;
 
-                $doctorFees = DoctorFee::where('doctor_id', $serialInfo->doctor->id)->first();
+                $doctorFees = DoctorsFee::where('doctor_id', $serialInfo->doctor->id)->first();
                 $doctorFeeAmount = $doctorFees ? $doctorFees->fee : 'not available';
                 return response()->json([
                     'status' => 'success',
@@ -121,6 +120,7 @@ class SerialController extends Controller
             $serial = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
                 ->join('departments', 'serials.department_id', 'departments.id')
                 ->join('schedules', 'serials.schedule_id', 'schedules.id')
+                ->join('doctors_fees', 'serials.doctor_id', 'doctors_fees.doctor_id')
                 ->select(
                     'serials.id',
                     'serials.name',
@@ -131,9 +131,10 @@ class SerialController extends Controller
                     'doctors.name as doctorName',
                     'departments.name as departmentName',
                     'schedules.opening_time',
-                    'schedules.day'
+                    'schedules.day',
+                    'doctors_fees.fees'
                 )->get();
-            // here i need doctors.name departments.name schedules.time
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'serial fetched successfully!',
