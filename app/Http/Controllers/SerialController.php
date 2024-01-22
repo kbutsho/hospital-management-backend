@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\DoctorsFee;
+use App\Models\Schedule;
 use App\Models\Serial;
 use App\Validations\SerialValidation;
 use Carbon\Carbon;
@@ -117,7 +120,19 @@ class SerialController extends Controller
     public function getSerials(Request $request)
     {
         try {
-            $serial = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
+
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $doctorFilter = $request->query('doctor');
+            $departmentFilter = $request->query('department');
+            $dateFilter = $request->query('date');
+            $timeSlotFilter = $request->query('schedule');
+            $sortOrder = $request->query('sortOrder', 'desc');
+            $sortBy = $request->query('sortBy', 'serials.id');
+
+
+            $query = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
                 ->join('departments', 'serials.department_id', 'departments.id')
                 ->join('schedules', 'serials.schedule_id', 'schedules.id')
                 ->join('doctors_fees', 'serials.doctor_id', 'doctors_fees.doctor_id')
@@ -128,17 +143,97 @@ class SerialController extends Controller
                     'serials.age',
                     'serials.date',
                     'serials.payment_status',
+                    'doctors.id as doctorId',
                     'doctors.name as doctorName',
+                    'departments.id as departmentId',
                     'departments.name as departmentName',
                     'schedules.opening_time',
                     'schedules.day',
                     'doctors_fees.fees'
-                )->get();
+                )->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('serials.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.age', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.date', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.payment_status', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('departments.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('schedules.day', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors_fees.fees', 'like', '%' . $searchTerm . '%');
+                });
+            }
+
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(serials.payment_status) = ?', strtolower($statusFilter));
+            }
+            if ($doctorFilter) {
+                $query->whereRaw('LOWER(doctors.id) = ?', strtolower($doctorFilter));
+            }
+            if ($departmentFilter) {
+                $query->whereRaw('LOWER(departments.id) = ?', strtolower($departmentFilter));
+            }
+            if ($dateFilter) {
+                $formattedDate = date('Y-m-d', strtotime($dateFilter));
+                $query->whereDate('serials.date', '=', $formattedDate);
+            }
+            if ($timeSlotFilter) {
+                if (preg_match('/(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/', $timeSlotFilter, $matches)) {
+                    $startTime = $matches[1];
+                    $endTime = $matches[2];
+                    $query->where(function ($q) use ($startTime, $endTime) {
+                        $q->where('schedules.opening_time', '=', $startTime)
+                            ->where('schedules.closing_time', '=', $endTime);
+                    });
+                }
+            }
+
+            $paginationData = $query->paginate($perPage);
+            $total = Serial::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function DoctorDepartmentAndScheduleList()
+    {
+        try {
+            $doctors = Doctor::select('id', 'name')->get();
+            $departments = Department::select('id', 'name')->get();
+
+            $schedules = Schedule::all();
+            $timeSlots = [];
+            foreach ($schedules as $schedule) {
+                $openingTime = $schedule->opening_time;
+                $closingTime = $schedule->closing_time;
+                $timeSlot = $openingTime . ' - ' . $closingTime;
+                $timeSlots[] = $timeSlot;
+            }
+            sort($timeSlots);
+            $uniqueTimeSlots = array_unique($timeSlots);
+            $formattedTimeSlots = [];
+            foreach ($uniqueTimeSlots as $slot) {
+                $formattedTimeSlots[] = ['time' => $slot];
+            }
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'serial fetched successfully!',
-                'data' => $serial
+                'message' => 'serial created successfully!',
+                'data' => [
+                    'doctors' => $doctors,
+                    'departments' => $departments,
+                    'schedule' => $formattedTimeSlots
+                ]
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
