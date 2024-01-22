@@ -241,7 +241,7 @@ class ScheduleController extends Controller
             $roomFilter = $request->query('room');
             $dayFilter = $request->query('day');
             $timeSlotFilter = $request->query('timeSlot');
-            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'schedules.id');
 
             $query = Schedule::join('doctors', 'schedules.doctor_id', '=', 'doctors.id')
