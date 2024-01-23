@@ -52,7 +52,7 @@ class ScheduleSeeder extends Seeder
             ['doctor_id' => 7, 'chamber_id' => 5, 'day' => 'friday', 'opening_time' => Carbon::createFromTime(17, 0, 0), 'closing_time' => Carbon::createFromTime(21, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
 
             ['doctor_id' => 8, 'chamber_id' => 6, 'day' => 'monday', 'opening_time' => Carbon::createFromTime(9, 0, 0), 'closing_time' => Carbon::createFromTime(17, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
-            ['doctor_id' => 8, 'chamber_id' => 6, 'day' => 'thursday', 'opening_time' => Carbon::createFromTime(17, 0, 0), 'closing_time' => Carbon::createFromTime(17, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 8, 'chamber_id' => 6, 'day' => 'thursday', 'opening_time' => Carbon::createFromTime(17, 0, 0), 'closing_time' => Carbon::createFromTime(21, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
 
             ['doctor_id' => 9, 'chamber_id' => 6, 'day' => 'friday', 'opening_time' => Carbon::createFromTime(9, 0, 0), 'closing_time' => Carbon::createFromTime(17, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
             ['doctor_id' => 10, 'chamber_id' => 7, 'day' => 'friday', 'opening_time' => Carbon::createFromTime(9, 0, 0), 'closing_time' => Carbon::createFromTime(17, 0, 0), 'status' => STATUS::ACTIVE, 'created_at' => now(), 'updated_at' => now()],
