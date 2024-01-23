@@ -7,6 +7,10 @@ class SerialValidation
     public $createSerialRules;
     public $createSerialMessages;
 
+    public $updateSerialStatusRules;
+    public $updateSerialStatusMessages;
+
+
     public function __construct()
     {
         $this->createSerialRules = [
@@ -30,6 +34,15 @@ class SerialValidation
             'schedule_id.required' => 'schedule is required!',
             'doctor_id.required' => 'doctor is required!',
             'department_id.required' => 'department is required!',
+        ];
+
+        $this->updateSerialStatusRules = [
+            'id' => 'required',
+            'payment_status' => 'required',
+        ];
+        $this->updateSerialStatusMessages = [
+            'payment_status.required' => 'payment status is required!',
+            'id.required' => 'department id is required!',
         ];
     }
 }

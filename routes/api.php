@@ -73,6 +73,7 @@ Route::prefix('administrator')->group(function () {
         Route::post('/schedule/update/status', [ScheduleController::class, 'updateScheduleStatus']);
 
         Route::get('/serial/all', [SerialController::class, 'getSerials']);
+        Route::post('/serial/update/status', [SerialController::class, 'updateSerialStatus']);
         Route::get('/serial/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
     });
 });
