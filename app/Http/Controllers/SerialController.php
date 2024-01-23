@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\Appointment;
 use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\DoctorsFee;
+use App\Models\Patient;
 use App\Models\Schedule;
 use App\Models\Serial;
 use App\Validations\SerialValidation;
@@ -205,6 +207,63 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    public function updateSerialStatus(Request $request)
+    {
+        try {
+            $validation = new SerialValidation();
+            $rules = $validation->updateSerialStatusRules;
+            $messages = $validation->updateSerialStatusMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $serial = Serial::find($request->id);
+            if (!$serial) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Serial not found!',
+                ], 404);
+            }
+
+            $serial->payment_status = $request->payment_status;
+            $serial->save();
+
+            $patient = Patient::firstOrCreate([
+                'phone' => $serial->phone,
+                'name' => $serial->name,
+                'address' => $serial->address,
+            ], [
+                'name' => $serial->name,
+                'age' => $serial->age,
+                'phone' => $serial->phone,
+                'address' => $serial->address,
+            ]);
+
+            $appointment = Appointment::where('serial_id', $serial->id)->first();
+            if ($appointment) {
+                $appointment->delete();
+            } else {
+                $newAppointment = new Appointment();
+                $newAppointment->serial_id = $serial->id;
+                $newAppointment->patient_id = $patient->id;
+                $newAppointment->schedule_id = $serial->schedule_id;
+                $newAppointment->date = $serial->date;
+
+                $maxSerialNumber = Appointment::where('schedule_id', $serial->schedule_id)
+                    ->where('date', $serial->date)->max('serial_number');
+                $newAppointment->serial_number = $maxSerialNumber === null ? 1 : $maxSerialNumber + 1;
+                $newAppointment->save();
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'status updated successfully!'
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
     public function DoctorDepartmentAndScheduleList()
     {
         try {
