@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ROLE;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChamberController;
@@ -74,7 +75,14 @@ Route::prefix('administrator')->group(function () {
 
         Route::get('/serial/all', [SerialController::class, 'getSerials']);
         Route::post('/serial/update/status', [SerialController::class, 'updateSerialStatus']);
-        Route::get('/serial/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
+        Route::delete('/serial/{id}', [SerialController::class, 'deleteSerial']);
+
+        Route::get('/patient/all', [PatientController::class, 'getAllPatient']);
+
+        Route::get('/appointment/all', [AppointmentController::class, 'getAppointments']);
+        Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+
+        Route::get('/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
     });
 });
 

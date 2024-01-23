@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
+use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
 use App\Models\Appointment;
 use App\Models\Department;
@@ -51,30 +52,40 @@ class SerialController extends Controller
             $serial->payment_status = 'unpaid';
             $serial->schedule_id = intval($request->schedule_id);
             $serial->date = Carbon::parse($request->date)->format('Y-m-d');
-            // $serial->day = $schedule[1];
-            // $openingTime = convertTo24Hour($schedule[2], $schedule[3]);
-            // $serial->opening_time = $openingTime;
-            // $closingTime = convertTo24Hour($schedule[4], $schedule[5]);
-            // $serial->closing_time = $closingTime;
+
             $serial->save();
 
-            // $serialNo = Serial::where('schedule_id', $serial->schedule_id)
-            //     ->whereDate('date', $serial->date)
-            //     ->count();
+            $serialData = Serial::with('doctor', 'department', 'schedule')
+                ->where('id', $serial->id)
+                ->first();
 
-            // $serialInfo = Serial::with('doctor', 'department', 'schedule')
-            //     ->where('id', $serial->id)
-            //     ->first();
+            $doctorName =  $serialData->doctor->name;
+            $departmentName =  $serialData->department->name;
+            $roomNumber =  $serialData->schedule->chamber->room;
+            $openingTime = $serialData->schedule->opening_time;
+            $day = $serialData->schedule->day;
+            $fees = DoctorsFee::where('doctor_id', $serial->doctor_id)->first();
 
-            // $doctorName =  $serialInfo->doctor->name;
-            // $departmentName =  $serialInfo->department->name;
-            // $roomNumber =  $serialInfo->schedule->chamber->room;
-            // $openingTime = $serialInfo->schedule->opening_time;
-            // $day = $serialInfo->schedule->day;
+            $serialInfo = [
+                'id' => $serial->id,
+                'name' => $serial->name,
+                'age' => $serial->age,
+                'phone' => $serial->phone,
+                'address' => $serial->phone,
+                'doctorName' => $doctorName,
+                'roomNumber' => $roomNumber,
+                'openingTime' => $openingTime,
+                'day' => $day,
+                'date' => $serial->date,
+                'departmentName' => $departmentName,
+                'paymentStatus' => $serial->payment_status,
+                'fees' => $fees->fees
+            ];
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'serial created successfully!',
-                'data' => $serial
+                'data' => $serialInfo
             ], 201);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
@@ -229,6 +240,8 @@ class SerialController extends Controller
             $serial->payment_status = $request->payment_status;
             $serial->save();
 
+
+
             $patient = Patient::firstOrCreate([
                 'phone' => $serial->phone,
                 'name' => $serial->name,
@@ -240,6 +253,12 @@ class SerialController extends Controller
                 'address' => $serial->address,
             ]);
 
+            if ($request->payment_status === 'unpaid') {
+                Patient::where('name', $serial->name)
+                    ->where('phone', $serial->phone)
+                    ->delete();
+            }
+
             $appointment = Appointment::where('serial_id', $serial->id)->first();
             if ($appointment) {
                 $appointment->delete();
@@ -249,6 +268,7 @@ class SerialController extends Controller
                 $newAppointment->patient_id = $patient->id;
                 $newAppointment->schedule_id = $serial->schedule_id;
                 $newAppointment->date = $serial->date;
+                $newAppointment->status = STATUS::CONFIRMED;
 
                 $maxSerialNumber = Appointment::where('schedule_id', $serial->schedule_id)
                     ->where('date', $serial->date)->max('serial_number');
@@ -294,6 +314,19 @@ class SerialController extends Controller
                     'schedule' => $formattedTimeSlots
                 ]
             ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function deleteSerial($id)
+    {
+        try {
+            $data = Serial::findOrFail($id);
+            $data->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'serial deleted successfully!'
+            ], 204);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

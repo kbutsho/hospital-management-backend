@@ -34,4 +34,51 @@ class PatientController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    public function getAllPatient(Request $request)
+    {
+        try {
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $sortOrder = $request->query('sortOrder', 'desc');
+            $sortBy = $request->query('sortBy', 'patients.id');
+            $query = Patient::select(
+                'id',
+                'name',
+                'age',
+                'address',
+                'gender',
+                'phone',
+                'email',
+                'emergency_contact_number',
+                'emergency_contact_name',
+                'blood_group_id'
+            )->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('patients.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.age', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.address', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.emergency_contact_number', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.emergency_contact_number', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('blood_group_id', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            $paginationData = $query->paginate($perPage);
+            $total = Patient::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
 }
