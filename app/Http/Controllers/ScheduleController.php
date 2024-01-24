@@ -7,12 +7,13 @@ use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
 use App\Models\Chamber;
 use App\Models\Department;
+use App\Models\Doctor;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Validations\ScheduleValidation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ScheduleController extends Controller
 {
@@ -212,25 +213,7 @@ class ScheduleController extends Controller
         }
     }
 
-    private function handleSaveSchedule(Request $request)
-    {
-        $schedule = new Schedule();
-        $schedule->doctor_id = $request->doctor_id;
-        $schedule->chamber_id = $request->chamber_id;
-        $schedule->day = $request->day;
-        $schedule->status = $request->status;
-        $schedule->details = $request->details;
-        $schedule->opening_time = date("H:i:s", strtotime($request->opening_time));
-        $schedule->closing_time = date("H:i:s", strtotime($request->closing_time));
-        $schedule->save();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'schedule created successfully!',
-            'data' => $schedule
-        ], 201);
-    }
-
-    // administrator: get all schedule
+    // administrator
     public function getAllScheduleWithDoctorAndChamber(Request $request)
     {
         try {
@@ -379,6 +362,37 @@ class ScheduleController extends Controller
                 'status' => false,
                 'message' => 'schedule not found!',
             ], 404);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // each doctor own schedule
+    public function doctorsSchedule()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $doctorId = Doctor::where('user_id', $user->id)->value('id');
+            $schedules = Schedule::where('doctor_id', $doctorId)->get();
+            $timeSlots = [];
+            foreach ($schedules as $schedule) {
+                $openingTime = $schedule->opening_time;
+                $closingTime = $schedule->closing_time;
+                $timeSlot = $openingTime . ' - ' . $closingTime;
+                $timeSlots[] = $timeSlot;
+            }
+            sort($timeSlots);
+            $uniqueTimeSlots = array_unique($timeSlots);
+            $formattedTimeSlots = [];
+            foreach ($uniqueTimeSlots as $slot) {
+                $formattedTimeSlots[] = ['time' => $slot];
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'serial created successfully!',
+                'data' => [
+                    'schedule' => $formattedTimeSlots
+                ]
+            ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

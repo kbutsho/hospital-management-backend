@@ -40,6 +40,8 @@ Route::prefix('doctor')->group(function () {
 
         Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
         // Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+
+        Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
     });
 });
 

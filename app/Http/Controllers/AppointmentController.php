@@ -9,7 +9,6 @@ use App\Models\Doctor;
 use App\Validations\AppointmentValidation;;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -116,8 +115,8 @@ class AppointmentController extends Controller
             $statusFilter = $request->query('status');
             $dateFilter = $request->query('date');
             $timeSlotFilter = $request->query('schedule');
-            $sortOrder = $request->query('sortOrder', 'desc');
-            $sortBy = $request->query('sortBy', 'appointments.id');
+            $sortOrder = $request->query('sortOrder', 'asc');
+            $sortBy = $request->query('sortBy', 'appointments.serial_number');
 
             // $user = Auth::user();
             $user = JWTAuth::parseToken()->authenticate();
@@ -137,6 +136,7 @@ class AppointmentController extends Controller
                     'patients.gender',
                     'appointments.date',
                     'appointments.status',
+                    'appointments.serial_number',
                     'serials.doctor_id',
                     'schedules.opening_time',
                     'schedules.closing_time',
@@ -191,6 +191,7 @@ class AppointmentController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // for administrator
     public function updateAppointmentStatus(Request $request)
     {
         try {
