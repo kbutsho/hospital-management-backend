@@ -36,6 +36,10 @@ Route::prefix('doctor')->group(function () {
         Route::get('/chamber/all', [ChamberController::class, 'getDoctorsChamber']);
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
         Route::patch('/chamber/{id}', [ChamberController::class, 'updateChamber']);
+
+
+        Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
+        // Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
     });
 });
 
