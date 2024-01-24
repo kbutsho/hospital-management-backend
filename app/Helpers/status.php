@@ -7,7 +7,7 @@ class STATUS
     const ACTIVE = 'active';
     const PENDING = 'pending';
     const DISABLE = 'disable';
-    const CONFIRMED = 'confirmed';
+    const PAID = 'paid';
     const IN_PROGRESS = 'in progress';
     const CLOSED = 'closed';
 }

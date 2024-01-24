@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('schedule_id');
             $table->bigInteger('patient_id');
             $table->bigInteger('serial_number');
-            $table->enum('status', [STATUS::CONFIRMED, STATUS::IN_PROGRESS, STATUS::CLOSED]);
+            $table->enum('status', [STATUS::PAID, STATUS::IN_PROGRESS, STATUS::CLOSED]);
             $table->date('date');
             $table->timestamps();
         });
