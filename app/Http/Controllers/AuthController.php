@@ -6,7 +6,6 @@ use App\Helpers\STATUS;
 use App\Helpers\ROLE;
 use App\Models\Administrator;
 use App\Models\Assistant;
-use App\Models\Chamber;
 use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -412,7 +411,7 @@ class AuthController extends Controller
                 || Auth::attempt(['phone' => $request->credential, 'password' => $request->password])
             ) {
                 // check user active or not
-                $user = Auth::user(); // fuck. here i need to modify user
+                $user = Auth::user();
                 if ($user->status === STATUS::ACTIVE) {
                     $name = '';
                     $role = $user->role;
