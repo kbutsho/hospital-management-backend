@@ -268,7 +268,7 @@ class SerialController extends Controller
                 $newAppointment->patient_id = $patient->id;
                 $newAppointment->schedule_id = $serial->schedule_id;
                 $newAppointment->date = $serial->date;
-                $newAppointment->status = STATUS::CONFIRMED;
+                $newAppointment->status = STATUS::PAID;
 
                 $maxSerialNumber = Appointment::where('schedule_id', $serial->schedule_id)
                     ->where('date', $serial->date)->max('serial_number');
