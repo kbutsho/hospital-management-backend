@@ -82,6 +82,7 @@ Route::prefix('administrator')->group(function () {
         Route::get('/serial/all', [SerialController::class, 'getSerials']);
         Route::post('/serial/update/status', [SerialController::class, 'updateSerialStatus']);
         Route::delete('/serial/{id}', [SerialController::class, 'deleteSerial']);
+        Route::get('/serial/{id}/serial-number', [SerialController::class, 'getSerialNumber']);
 
         Route::get('/patient/all', [PatientController::class, 'getAllPatient']);
 
