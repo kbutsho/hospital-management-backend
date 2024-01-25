@@ -148,6 +148,7 @@ class SerialController extends Controller
             $query = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
                 ->join('departments', 'serials.department_id', 'departments.id')
                 ->join('schedules', 'serials.schedule_id', 'schedules.id')
+                ->join('chambers', 'schedules.chamber_id', 'chambers.id')
                 ->join('doctors_fees', 'serials.doctor_id', 'doctors_fees.doctor_id')
                 ->select(
                     'serials.id',
@@ -162,7 +163,8 @@ class SerialController extends Controller
                     'departments.name as departmentName',
                     'schedules.opening_time',
                     'schedules.day',
-                    'doctors_fees.fees'
+                    'doctors_fees.fees',
+                    'chambers.room as roomNumber'
                 )->orderBy($sortBy, $sortOrder);
 
             if ($searchTerm) {
@@ -327,6 +329,20 @@ class SerialController extends Controller
                 'status' => true,
                 'message' => 'serial deleted successfully!'
             ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getSerialNumber($id)
+    {
+        try {
+            $appointment = Appointment::where('serial_id', $id)->first();
+            return response()->json([
+                'status' => true,
+                'message' => 'serial found successfully!',
+                'serialNumber' => $appointment->serial_number,
+                'patientId' =>   $appointment->patient_id
+            ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
