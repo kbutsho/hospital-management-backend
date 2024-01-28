@@ -8,6 +8,7 @@ use App\Http\Controllers\ChamberController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SerialController;
 use App\Http\Controllers\TestController;
@@ -39,7 +40,9 @@ Route::prefix('doctor')->group(function () {
 
 
         Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
-        // Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+        Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+
+        Route::get('/prescription/patient-prescriptions/{id}', [PrescriptionController::class, 'patientWithPrescriptionData']);
 
         Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
     });
