@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ROLE;
+use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
@@ -55,6 +56,10 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT]
 
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
+
+
+        // dashboard
+        Route::get('/dashboard/info', [AdministratorController::class, 'dashboardInfo']);
 
         Route::get('/doctor/all', [DoctorController::class, 'getAllDoctorForAdministrator']);
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
