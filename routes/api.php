@@ -12,6 +12,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SerialController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,9 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT]
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
 
+        // site info /administration/setting/info/update
+        Route::get('/setting/info', [SettingController::class, 'showSiteInfo']);
+        Route::post('/setting/info/update', [SettingController::class, 'updateSiteInfo']);
 
         // dashboard
         Route::get('/dashboard/info', [AdministratorController::class, 'dashboardInfo']);
