@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('address');
             $table->integer('age');
             $table->enum('gender', ['male', 'female', 'other']);
+            $table->string('photo')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
