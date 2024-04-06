@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('bmdc_id');
             $table->text('address')->nullable();
             $table->bigInteger('department_id');
+            $table->string('photo')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
