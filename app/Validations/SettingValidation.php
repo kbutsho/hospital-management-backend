@@ -14,6 +14,8 @@ class SettingValidation
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'address' => 'required',
             'email' => 'required',
+            'facebook' => 'required',
+            'youtube' => 'required',
         ];
         $this->updateSettingMessages = [
             'organization_name.required' => 'name is required!',
@@ -22,6 +24,8 @@ class SettingValidation
             'phone.required' => 'phone is required!',
             'address.required' => 'address is required!',
             'email.required' => 'email is required!',
+            'facebook.required' => 'facebook is required!',
+            'youtube.required' => 'youtube is required!',
         ];
     }
 }
