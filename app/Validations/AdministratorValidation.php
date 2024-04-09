@@ -10,6 +10,9 @@ class AdministratorValidation
     public $updateAdministratorProfilePhotoRules;
     public $updateAdministratorProfilePhotoMessages;
 
+    public $updatePasswordRules;
+    public $updatePasswordMessages;
+
     public function __construct()
     {
         $this->updateAdministratorProfileRules = [
@@ -40,6 +43,33 @@ class AdministratorValidation
             'photo.image' => 'Photo must be an image file.',
             'photo.mimes' => 'Photo must be either a JPEG or PNG file.',
             'photo.max' => 'Photo size cannot exceed 2048 kilobytes.',
+        ];
+
+        $this->updatePasswordRules = [
+            'old_password' => 'required',
+            'new_password' => [
+                'required',
+                'string',
+                'min:10',
+                'max:24',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+            ],
+            'confirm_password' => [
+                'required',
+                'same:new_password',
+            ]
+        ];
+        $this->updatePasswordMessages = [
+            'old_password.required' => 'old password is required!',
+            'new_password.required' => 'new password is required!',
+            'new_password.regex' => 'invalid password format!',
+            'new_password.min' => 'must contain 10 characters!',
+            'new_password.max' => 'new password is too large!',
+            'confirm_password.required' => 'confirm password is required!',
+            'confirm_password.same' => 'confirm password not match!'
         ];
     }
 }

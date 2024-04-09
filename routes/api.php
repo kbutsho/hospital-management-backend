@@ -64,6 +64,7 @@ Route::prefix('administrator')->group(function () {
         Route::post('/profile/update', [UserController::class, 'updateAdminProfile']);
         Route::post('/profile/photo/update', [UserController::class, 'updateAdminProfilePhoto']);
         Route::get('/profile/photo/delete', [UserController::class, 'deleteAdminProfilePhoto']);
+        Route::post('/profile/change-password', [UserController::class, 'changePassword']);
 
         // site info /administration/setting/info/update
         Route::get('/setting/info', [SettingController::class, 'showSiteInfo']);
