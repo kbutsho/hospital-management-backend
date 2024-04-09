@@ -13,6 +13,7 @@ class SettingValidation
             'organization_name' => 'required|min:3|max:120',
             'phone' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
             'address' => 'required',
+            'about' => 'required',
             'email' => 'required',
             'facebook' => 'required',
             'youtube' => 'required',
@@ -26,6 +27,7 @@ class SettingValidation
             'email.required' => 'email is required!',
             'facebook.required' => 'facebook is required!',
             'youtube.required' => 'youtube is required!',
+            'about.required' => 'about is required!',
         ];
     }
 }
