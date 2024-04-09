@@ -14,6 +14,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SerialController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VisitingHourController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,12 @@ Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT]
 
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
+
+        // administrator profile
+        Route::get('/profile', [UserController::class, 'AdminProfile']);
+        Route::post('/profile/update', [UserController::class, 'updateAdminProfile']);
+        Route::post('/profile/photo/update', [UserController::class, 'updateAdminProfilePhoto']);
+        Route::get('/profile/photo/delete', [UserController::class, 'deleteAdminProfilePhoto']);
 
         // site info /administration/setting/info/update
         Route::get('/setting/info', [SettingController::class, 'showSiteInfo']);
