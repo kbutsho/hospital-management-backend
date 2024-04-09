@@ -17,6 +17,7 @@ class SettingValidation
             'email' => 'required',
             'facebook' => 'required',
             'youtube' => 'required',
+            'footer_text' => 'required'
         ];
         $this->updateSettingMessages = [
             'organization_name.required' => 'name is required!',
@@ -28,6 +29,7 @@ class SettingValidation
             'facebook.required' => 'facebook is required!',
             'youtube.required' => 'youtube is required!',
             'about.required' => 'about is required!',
+            'footer_text.required' => 'footer info is required!',
         ];
     }
 }

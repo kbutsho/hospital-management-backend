@@ -38,6 +38,15 @@ Route::get('/patient/serial/{id}', [SerialController::class, 'getSerialById']);
 
 Route::prefix('doctor')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR])->group(function () {
+
+
+        Route::get('/profile', [UserController::class, 'DoctorProfile']);
+        Route::post('/profile/update', [UserController::class, 'updateDoctorProfile']);
+        Route::post('/profile/photo/update', [UserController::class, 'updateDoctorProfilePhoto']);
+        Route::get('/profile/photo/delete', [UserController::class, 'deleteDoctorProfilePhoto']);
+        Route::post('/profile/change-password', [UserController::class, 'changePassword']);
+
+
         Route::get('/chamber/all', [ChamberController::class, 'getDoctorsChamber']);
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
         Route::patch('/chamber/{id}', [ChamberController::class, 'updateChamber']);

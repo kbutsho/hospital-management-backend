@@ -18,6 +18,9 @@ return new class extends Migration
             $table->text('designation');
             $table->string('bmdc_id');
             $table->text('address')->nullable();
+            $table->string('age')->nullable();
+            $table->string('gender')->nullable();
+            $table->text('bio')->nullable();
             $table->bigInteger('department_id');
             $table->string('photo')->nullable();
             $table->timestamps();

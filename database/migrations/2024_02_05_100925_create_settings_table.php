@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('organization_name')->nullable();
             $table->text('address')->nullable();
             $table->text('about')->nullable();
+            $table->text('footer_text')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('facebook')->nullable();

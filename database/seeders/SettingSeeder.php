@@ -20,7 +20,8 @@ class SettingSeeder extends Seeder
                 'phone' => '+8801749555864',
                 'email' => 'kbutsho@gmail.com',
                 'facebook' => 'facebook.com/kbutsho',
-                'youtube' => 'youtube.com/kbutsho'
+                'youtube' => 'youtube.com/kbutsho',
+                'footer_text' => 'footer_text'
             ]
         ];
         Setting::insert($settings);

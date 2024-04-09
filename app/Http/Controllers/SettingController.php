@@ -42,6 +42,7 @@ class SettingController extends Controller
             $info->facebook = $request->facebook;
             $info->youtube = $request->youtube;
             $info->about = $request->about;
+            $info->footer_text = $request->footer_text;
             $info->save();
 
             return response()->json([
