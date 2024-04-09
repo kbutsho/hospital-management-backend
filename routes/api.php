@@ -25,6 +25,7 @@ Route::prefix('signup')->group(function () {
     Route::post('/assistant', [AuthController::class, 'assistantSignup']);
 });
 
+Route::get('/site-info', [SettingController::class, 'siteInfo']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment']);
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);

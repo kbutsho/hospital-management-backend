@@ -52,4 +52,18 @@ class SettingController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+
+    public function siteInfo()
+    {
+        try {
+            $info = Setting::first();
+            return response()->json([
+                'status' => true,
+                'message' => 'site information retrieved successfully!',
+                'data' => $info
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
 }
