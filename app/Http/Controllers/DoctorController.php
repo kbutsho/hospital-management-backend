@@ -15,9 +15,10 @@ class DoctorController extends Controller
     public function getAllActiveDoctor()
     {
         try {
-            $doctors = User::select('doctors.name', 'doctors.id')
+            $doctors = User::select('doctors.name as doctorName', 'doctors.id', 'doctors.photo')
                 ->where('role', 'doctor')
                 ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                // ->join('departments', 'doctors.department_id', '=', 'departments.id')
                 ->where('users.status', 'active')
                 ->get();
             return response()->json([
