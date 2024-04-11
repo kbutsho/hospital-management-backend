@@ -21,7 +21,7 @@ class SettingSeeder extends Seeder
                 'email' => 'kbutsho@gmail.com',
                 'facebook' => 'facebook.com/kbutsho',
                 'youtube' => 'youtube.com/kbutsho',
-                'footer_text' => 'footer_text'
+                'footer_text' => "Welcome to our website. Our website is designed to provide patients and visitors with easy access to essential details"
             ]
         ];
         Setting::insert($settings);
