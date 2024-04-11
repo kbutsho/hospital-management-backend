@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\User;
 use App\Validations\DoctorValidation;
@@ -12,24 +13,36 @@ use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
-    public function getAllActiveDoctor()
+    public function getAllActiveDoctor(Request $request)
     {
         try {
-            $doctors = User::select('doctors.name as doctorName', 'doctors.id', 'doctors.photo')
-                ->where('role', 'doctor')
+            $departmentFilter = $request->query('department');
+            $query = User::where('role', 'doctor')
                 ->join('doctors', 'users.id', '=', 'doctors.user_id')
-                // ->join('departments', 'doctors.department_id', '=', 'departments.id')
+                ->join('departments', 'doctors.department_id', '=', 'departments.id')
                 ->where('users.status', 'active')
-                ->get();
+                ->select(
+                    'doctors.name as doctorName',
+                    'departments.name',
+                    'doctors.id',
+                    'doctors.photo',
+                    'users.email',
+                    'users.phone'
+                );
+            if ($departmentFilter) {
+                $query->where('departments.name', strtolower($departmentFilter));
+            }
+            $result = $query->get();
             return response()->json([
                 'status' => true,
-                'message' => 'doctors retrieved successfully!',
-                'data' => $doctors,
+                'message' => 'Doctors retrieved successfully!',
+                'data' => $result
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
     }
+
 
     // administrator: doctor list
     public function getAllDoctorForAdministrator(Request $request)
@@ -157,4 +170,40 @@ class DoctorController extends Controller
     //         return ExceptionHandler::handleException($e);
     //     }
     // }
+    public function getDoctorInfo($id)
+    {
+        try {
+            $doctor = Doctor::where('id', '=', $id)->first();
+            if ($doctor) {
+                $user = User::where('id', '=', $doctor->user_id)->first();
+                $department = Department::where('id', '=', $doctor->department_id)->first();
+                $doctorInfo = [
+                    'name' => $doctor->name,
+                    'address' => $doctor->address,
+                    'bio' => $doctor->bio,
+                    'designation' => $doctor->designation,
+                    'age' => $doctor->age,
+                    'bmdc_id' => $doctor->bmdc_id,
+                    'gender' => $doctor->gender,
+                    'department_name' => $department->name,
+                    'photo' => $doctor->photo,
+                    'phone' => $user->phone,
+                    'email' => $user->email
+                ];
+                return response()->json([
+                    'status' => true,
+                    'message' => 'doctor info get successfully!',
+                    'data' => $doctorInfo
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'doctor not found!',
+                    'error' => 'invalid doctor id!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
 }
