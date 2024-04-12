@@ -48,7 +48,7 @@ class DepartmentController extends Controller
     public function getActiveDepartment()
     {
         try {
-            $data = Department::select('id', 'name')
+            $data = Department::select('id', 'name', 'photo', 'description')
                 ->where('status', 'active')
                 ->get();
             return response()->json([
