@@ -6,6 +6,7 @@ use App\Helpers\ExceptionHandler;
 use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
 use App\Models\Department;
+use App\Models\Doctor;
 use App\Validations\DepartmentValidation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -56,6 +57,28 @@ class DepartmentController extends Controller
                 'message' => 'department retrieved successfully!',
                 'data' => $data,
             ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getDepartmentInfo($id)
+    {
+        try {
+            $department = Department::where('id', '=', $id)->first();
+            if ($department) {
+                $doctors = Doctor::where('department_id', '=', $department->id)->get();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'doctor info get successfully!',
+                    'data' => ['department' => $department, 'doctor' => $doctors]
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'department not found!',
+                    'error' => 'invalid department id!'
+                ], 404);
+            }
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

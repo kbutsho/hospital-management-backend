@@ -178,6 +178,7 @@ class DoctorController extends Controller
                 $user = User::where('id', '=', $doctor->user_id)->first();
                 $department = Department::where('id', '=', $doctor->department_id)->first();
                 $doctorInfo = [
+                    'id' => $doctor->id,
                     'name' => $doctor->name,
                     'address' => $doctor->address,
                     'bio' => $doctor->bio,
