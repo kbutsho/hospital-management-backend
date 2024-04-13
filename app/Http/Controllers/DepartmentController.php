@@ -35,8 +35,16 @@ class DepartmentController extends Controller
             }
             $data = new Department();
             $data->name = $request->name;
+            $data->description = $request->description;
             $data->status = STATUS::ACTIVE;
+
+            // save photo
+            $photo = $request->file('photo');
+            $photoName = time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move('uploads/department/', $photoName);
+            $data->photo = $photoName;
             $data->save();
+
             return response()->json([
                 'status' => true,
                 'message' => 'department created successfully!',
@@ -92,13 +100,13 @@ class DepartmentController extends Controller
             $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'departments.id');
 
-            $query = Department::select('departments.id', 'departments.name', 'departments.status')
+            $query = Department::select('departments.id', 'departments.name', 'departments.status', 'departments.photo')
                 ->selectRaw('CAST(SUM(users.status = "active") AS SIGNED) as activeDoctor')
                 ->selectRaw('CAST(SUM(users.status = "pending") AS SIGNED) as pendingDoctor')
                 ->selectRaw('CAST(SUM(users.status = "disable") AS SIGNED) as disableDoctor')
                 ->leftJoin('doctors', 'departments.id', '=', 'doctors.department_id')
                 ->leftJoin('users', 'doctors.user_id', '=', 'users.id')
-                ->groupBy('departments.id', 'departments.name', 'departments.status')
+                ->groupBy('departments.id', 'departments.name', 'departments.status', 'departments.photo')
                 ->with(['doctors'])
                 ->orderBy($sortBy, $sortOrder);
 
