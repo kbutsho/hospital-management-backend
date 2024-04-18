@@ -100,13 +100,13 @@ class DepartmentController extends Controller
             $sortOrder = $request->query('sortOrder', 'desc');
             $sortBy = $request->query('sortBy', 'departments.id');
 
-            $query = Department::select('departments.id', 'departments.name', 'departments.status', 'departments.photo')
+            $query = Department::select('departments.id', 'departments.name', 'departments.status', 'departments.photo', 'departments.description')
                 ->selectRaw('CAST(SUM(users.status = "active") AS SIGNED) as activeDoctor')
                 ->selectRaw('CAST(SUM(users.status = "pending") AS SIGNED) as pendingDoctor')
                 ->selectRaw('CAST(SUM(users.status = "disable") AS SIGNED) as disableDoctor')
                 ->leftJoin('doctors', 'departments.id', '=', 'doctors.department_id')
                 ->leftJoin('users', 'doctors.user_id', '=', 'users.id')
-                ->groupBy('departments.id', 'departments.name', 'departments.status', 'departments.photo')
+                ->groupBy('departments.id', 'departments.name', 'departments.status', 'departments.photo', 'departments.description')
                 ->with(['doctors'])
                 ->orderBy($sortBy, $sortOrder);
 
@@ -159,17 +159,33 @@ class DepartmentController extends Controller
                 return ValidationHandler::handleValidation($validator);
             }
             $isExist = Department::where('name', '=', $request->name)->first();
-            if ($isExist) {
-                return response()->json([
-                    'status' => false,
-                    'error' => [
-                        "name" => "department already exist!"
-                    ],
-                    'message' => 'failed to update department!',
-                ], 409);
-            };
+            // if ($isExist) {
+            //     if ($isExist->name !== $request->name) {
+            //         return response()->json([
+            //             'status' => false,
+            //             'error' => [
+            //                 "name" => "department already exist!"
+            //             ],
+            //             'message' => 'failed to update department!',
+            //         ], 409);
+            //     }
+            // };
             $department = Department::findOrFail($id);
             $department->name = $request->name;
+            $department->description = $request->description;
+
+            if ($request->hasFile('photo')) {
+                if ($department->photo) {
+                    $previousPhotoPath = public_path('uploads/department/' . $department->photo);
+                    if (file_exists($previousPhotoPath)) {
+                        unlink($previousPhotoPath);
+                    }
+                }
+                $photo = $request->file('photo');
+                $photoName = time() . '.' . $photo->getClientOriginalExtension();
+                $photo->move('uploads/department/', $photoName);
+                $department->photo = $photoName;
+            }
             $department->save();
             return response()->json([
                 'status' => true,

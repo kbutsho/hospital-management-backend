@@ -103,7 +103,7 @@ Route::prefix('administrator')->group(function () {
         Route::get('/department/all', [DepartmentController::class, 'getAllDepartmentWithDoctors']);
         Route::post('/department/update/status', [DepartmentController::class, 'updateDepartmentStatus']);
         Route::delete('/department/{id}', [DepartmentController::class, 'deleteDepartment']);
-        Route::patch('/department/{id}', [DepartmentController::class, 'updateDepartment']);
+        Route::post('/department/update/{id}', [DepartmentController::class, 'updateDepartment']);
 
         Route::post('/schedule/create', [ScheduleController::class, 'createSchedule']);
         Route::get('/schedule/all', [ScheduleController::class, 'getAllScheduleWithDoctorAndChamber']);

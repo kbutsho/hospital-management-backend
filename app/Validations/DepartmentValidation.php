@@ -30,10 +30,12 @@ class DepartmentValidation
         ];
         $this->updateDepartmentRules = [
             'name' => 'required',
+            'description' => 'required',
             // photo, description
         ];
         $this->updateDepartmentMessages = [
-            'name.required' => 'department name is required!'
+            'name.required' => 'name is required!',
+            'description.required' => 'description is required!'
         ];
 
         $this->updateDepartmentStatusRules = [
