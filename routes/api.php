@@ -85,7 +85,21 @@ Route::prefix('administrator')->group(function () {
         // dashboard
         Route::get('/dashboard/info', [AdministratorController::class, 'dashboardInfo']);
 
+        // doctor
         Route::get('/doctor/all', [DoctorController::class, 'getAllDoctorForAdministrator']);
+        Route::get('/doctor/{id}', [DoctorController::class, 'getDoctorInfo']);
+        Route::post('/doctor/profile/update/{id}', [DoctorController::class, 'updateDoctorProfile']);
+
+        Route::post('/doctor/profile/photo/update/{id}', [DoctorController::class, 'updateDoctorProfilePhoto']);
+        Route::get('/doctor/profile/photo/delete/{id}', [DoctorController::class, 'deleteDoctorProfilePhoto']);
+        Route::post('/doctor/profile/change-password/{id}', [DoctorController::class, 'changePassword']);
+
+
+
+
+
+
+
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
         Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 

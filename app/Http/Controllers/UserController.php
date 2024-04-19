@@ -352,13 +352,6 @@ class UserController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
-
-
-
-
-
-
     public function changePassword(Request $request)
     {
         try {

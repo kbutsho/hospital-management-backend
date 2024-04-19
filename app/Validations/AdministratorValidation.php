@@ -13,6 +13,9 @@ class AdministratorValidation
     public $updatePasswordRules;
     public $updatePasswordMessages;
 
+    public $updateDoctorPasswordRules;
+    public $updateDoctorPasswordMessages;
+
     public function __construct()
     {
         $this->updateAdministratorProfileRules = [
@@ -64,6 +67,33 @@ class AdministratorValidation
         ];
         $this->updatePasswordMessages = [
             'old_password.required' => 'old password is required!',
+            'new_password.required' => 'new password is required!',
+            'new_password.regex' => 'invalid password format!',
+            'new_password.min' => 'must contain 10 characters!',
+            'new_password.max' => 'new password is too large!',
+            'confirm_password.required' => 'confirm password is required!',
+            'confirm_password.same' => 'confirm password not match!'
+        ];
+
+
+
+        $this->updateDoctorPasswordRules = [
+            'new_password' => [
+                'required',
+                'string',
+                'min:10',
+                'max:24',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+            ],
+            'confirm_password' => [
+                'required',
+                'same:new_password',
+            ]
+        ];
+        $this->updateDoctorPasswordMessages = [
             'new_password.required' => 'new password is required!',
             'new_password.regex' => 'invalid password format!',
             'new_password.min' => 'must contain 10 characters!',
