@@ -238,4 +238,46 @@ class ChamberController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+
+    public function updateChamberRoom(Request $request, $id)
+    {
+        try {
+            $validation = new ChamberValidation();
+            $rules = $validation->createOrUpdateChamberRules;
+            $messages = $validation->createOrUpdateChamberMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+
+            $chamber = Chamber::where('id', '=', $id)->first();
+
+            if ($chamber) {
+                $existingChamber = Chamber::where('room', '=', $request->room)->where('id', '!=', $id)->first();
+                if ($existingChamber) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'room already exists for another chamber!',
+                        'error' => ['room' => 'room already exist']
+                    ], 422);
+                }
+
+                $chamber->room = $request->room;
+                $chamber->save();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Chamber updated successfully!'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Chamber not found!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
 }
