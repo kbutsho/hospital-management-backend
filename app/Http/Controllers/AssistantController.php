@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
+use App\Models\AssignedAssistant;
 use App\Models\Assistant;
+use App\Models\Chamber;
 use App\Models\User;
+use App\Validations\AdministratorValidation;
 use App\Validations\AssistantValidation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AssistantController extends Controller
@@ -98,6 +102,7 @@ class AssistantController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator: delete assistant
     public function deleteAssistant($id)
     {
         try {
@@ -109,6 +114,224 @@ class AssistantController extends Controller
                 'status' => true,
                 'message' => 'assistant deleted successfully!'
             ], 204);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+    // public: assistant info
+    public function getAssistantInfo($id)
+    {
+        try {
+            $assistant = Assistant::where('id', '=', $id)->first();
+            if ($assistant) {
+                $user = User::where('id', '=', $assistant->user_id)->first();
+                $assignedAssistant = AssignedAssistant::where('assistant_id', '=', $assistant->id)->first();
+                $chamber =  Chamber::where('id', '=', $assignedAssistant->chamber_id)->first();
+
+                $assistantInfo = [
+                    'id' => $assistant->id,
+                    'name' => $assistant->name,
+                    'address' => $assistant->address,
+                    'age' => $assistant->age,
+                    'gender' => $assistant->gender,
+                    'room' => $chamber->room,
+                    'photo' => $assistant->photo,
+                    'phone' => $user->phone,
+                    'email' => $user->email
+                ];
+                return response()->json([
+                    'status' => true,
+                    'message' => 'assistant info get successfully!',
+                    'data' => $assistantInfo
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'assistant not found!',
+                    'error' => 'invalid assistant id!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // administrator: assistant profile update
+    public function updateAssistantProfile(Request $request, $id)
+    {
+        try {
+            $validation = new AssistantValidation();
+            $rules = $validation->updateAssistantProfileRules;
+            $messages = $validation->updateAssistantProfileMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $assistant = Assistant::where('id', '=', $id)->first();
+            if ($assistant) {
+                $user = User::where('id', '=', $assistant->user_id)->first();
+                if (
+                    $request->email != $user->email && User::where('email', $request->email)->exists()
+                    && $request->phone != $user->phone && User::where('phone', $request->phone)->exists()
+                ) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "email and phone already used!",
+                        'error' => [
+                            'email' => "$request->email already used!",
+                            'phone' => "$request->phone already used!"
+                        ]
+                    ], 422);
+                }
+                if ($request->email != $user->email && User::where('email', $request->email)->exists()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "email already used!",
+                        'error' => [
+                            'email' => "$request->email already used!",
+                        ]
+                    ], 422);
+                }
+                if ($request->phone != $user->phone && User::where('phone', $request->phone)->exists()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "phone already used!",
+                        'error' => [
+                            'phone' => "$request->phone already used!"
+                        ]
+                    ], 422);
+                }
+
+                $user->email = $request->email;
+                $user->phone = $request->phone;
+                $assistant->name = $request->name;
+                $assistant->age = $request->age;
+                $assistant->gender = $request->gender;
+                $assistant->address = $request->address;
+
+                $user->save();
+                $assistant->save();
+
+                $userInfo = [
+                    'name' => $assistant->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'address' => $assistant->address,
+                    'age' => $assistant->age,
+                    'gender' => $assistant->gender,
+                    'photo' => $assistant->photo
+                ];
+                return response()->json([
+                    'status' => true,
+                    'message' => 'profile update successfully!',
+                    'data' => $userInfo
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'doctor not found!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // administrator: update assistant profile photo
+    public function updateAssistantProfilePhoto(Request $request, $id)
+    {
+        try {
+            $validation = new AssistantValidation();
+            $rules = $validation->updateAssistantProfilePhotoRules;
+            $messages = $validation->updateAssistantProfilePhotoMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $assistant = Assistant::where('id', '=', $id)->first();
+            if ($assistant) {
+                if ($request->hasFile('photo')) {
+                    if ($assistant->photo) {
+                        $previousPhotoPath = public_path('uploads/assistantProfile/' . $assistant->photo);
+                        if (file_exists($previousPhotoPath)) {
+                            unlink($previousPhotoPath);
+                        }
+                    }
+                    $photo = $request->file('photo');
+                    $photoName = time() . '.' . $photo->getClientOriginalExtension();
+                    $photo->move('uploads/assistantProfile/', $photoName);
+                    $assistant->photo = $photoName;
+                }
+                $assistant->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'photo update successfully!',
+                    'data' => $assistant
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'doctor not found!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // administrator: assistant profile photo delete
+    public function deleteAssistantProfilePhoto($id)
+    {
+        try {
+            $assistant = Assistant::where('id', '=', $id)->first();
+            if ($assistant) {
+                if ($assistant->photo) {
+                    $previousPhotoPath = public_path('uploads/assistantProfile/' . $assistant->photo);
+                    if (file_exists($previousPhotoPath)) {
+                        unlink($previousPhotoPath);
+                    }
+                }
+                $assistant->photo = null;
+                $assistant->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'photo delete successfully!',
+                    'data' => $assistant
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'assistant not found!'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // administrator assistant password change
+    public function changeAssistantPassword(Request $request, $id)
+    {
+        try {
+            $validation = new AdministratorValidation();
+            $rules = $validation->updateDoctorPasswordRules;
+            $messages = $validation->updateDoctorPasswordMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $assistant = Assistant::where('id', '=', $id)->first();
+            if ($assistant) {
+                $user = User::where('id', '=', $assistant->user_id)->first();
+                $user->password = Hash::make($request->new_password);
+                $user->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'password change successfully!',
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'assistant not found!'
+                ], 404);
+            }
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }

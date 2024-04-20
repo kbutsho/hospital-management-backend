@@ -30,6 +30,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/department/all', [DepartmentController::class, 'getActiveDepartment']);
 Route::get('/doctor/all', [DoctorController::class, 'getAllActiveDoctor']);
 Route::get('/doctor/info/{id}', [DoctorController::class, 'getDoctorInfo']);
+Route::get('/assistant/info/{id}', [AssistantController::class, 'getAssistantInfo']);
 Route::get('/department/info/{id}', [DepartmentController::class, 'getDepartmentInfo']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
 Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAndChamberForCreateSchedule']);
@@ -53,12 +54,10 @@ Route::prefix('doctor')->group(function () {
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
         Route::patch('/chamber/{id}', [ChamberController::class, 'updateChamber']);
 
-
         Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
         Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
 
         Route::get('/prescription/patient-prescriptions/{id}', [PrescriptionController::class, 'patientWithPrescriptionData']);
-
         Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
     });
 });
@@ -85,33 +84,34 @@ Route::prefix('administrator')->group(function () {
         // dashboard
         Route::get('/dashboard/info', [AdministratorController::class, 'dashboardInfo']);
 
+
         // doctor
         Route::get('/doctor/all', [DoctorController::class, 'getAllDoctorForAdministrator']);
         Route::get('/doctor/{id}', [DoctorController::class, 'getDoctorInfo']);
+        Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
         Route::post('/doctor/profile/update/{id}', [DoctorController::class, 'updateDoctorProfile']);
-
         Route::post('/doctor/profile/photo/update/{id}', [DoctorController::class, 'updateDoctorProfilePhoto']);
         Route::get('/doctor/profile/photo/delete/{id}', [DoctorController::class, 'deleteDoctorProfilePhoto']);
-        Route::post('/doctor/profile/change-password/{id}', [DoctorController::class, 'changePassword']);
-
-
-
-
-
-
-
+        Route::post('/doctor/profile/change-password/{id}', [DoctorController::class, 'changeDoctorPassword']);
         Route::post('/doctor/update/status', [DoctorController::class, 'updateDoctorStatus']);
-        Route::delete('/doctor/{id}', [DoctorController::class, 'deleteDoctor']);
 
+
+        // assistant
         Route::get('/assistant/all', [AssistantController::class, 'getAllAssistantWithChamber']);
-        Route::post('/assistant/update/status', [AssistantController::class, 'updateAssistantStatus']);
+        Route::get('/assistant/{id}', [AssistantController::class, 'getAssistantInfo']);
         Route::delete('/assistant/{id}', [AssistantController::class, 'deleteAssistant']);
+        Route::post('/assistant/profile/update/{id}', [AssistantController::class, 'updateAssistantProfile']);
+        Route::post('/assistant/profile/photo/update/{id}', [AssistantController::class, 'updateAssistantProfilePhoto']);
+        Route::get('/assistant/profile/photo/delete/{id}', [AssistantController::class, 'deleteAssistantProfilePhoto']);
+        Route::post('/assistant/profile/change-password/{id}', [AssistantController::class, 'changeAssistantPassword']);
+        Route::post('/assistant/update/status', [AssistantController::class, 'updateAssistantStatus']);
 
+
+        // chamber
         Route::post('/chamber/create', [ChamberController::class, 'createAdministratorChamber']);
         Route::get('/chamber/all', [ChamberController::class, 'getAdministratorChamber']);
         Route::post('/chamber/update/{id}', [ChamberController::class, 'updateChamberRoom']);
         Route::post('/chamber/update/status', [ChamberController::class, 'updateChamberStatus']);
-
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
         Route::get('/chamber/{id}', [ChamberController::class, 'getChamberDetails']);
 

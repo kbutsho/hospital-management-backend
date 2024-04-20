@@ -45,7 +45,6 @@ class DoctorController extends Controller
         }
     }
 
-
     // administrator: doctor list
     public function getAllDoctorForAdministrator(Request $request)
     {
@@ -154,24 +153,7 @@ class DoctorController extends Controller
         }
     }
 
-    // public function getDoctorListWithChambers()
-    // {
-    //     try {
-
-    //         $activeDoctorsWithActiveUsers = Doctor::join('users', 'users.id', '=', 'doctors.user_id')
-    //             ->where('users.status', 'active')
-    //             ->with(['chambers' => function ($query) {
-    //                 $query->select('id', 'address', 'doctor_id')
-    //                     ->where('status', 'active');
-    //             }])
-    //             ->select('doctors.id', 'doctors.name')
-    //             ->get();
-
-    //         return $activeDoctorsWithActiveUsers;
-    //     } catch (\Exception $e) {
-    //         return ExceptionHandler::handleException($e);
-    //     }
-    // }
+    // public: doctor info
     public function getDoctorInfo($id)
     {
         try {
@@ -210,8 +192,7 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
-    // doctor profile update
+    // administrator: doctor profile update
     public function updateDoctorProfile(Request $request, $id)
     {
         try {
@@ -299,8 +280,7 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
-    // update doctor profile photo
+    // administrator: update doctor profile photo
     public function updateDoctorProfilePhoto(Request $request, $id)
     {
         try {
@@ -341,6 +321,7 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator: doctor profile photo delete
     public function deleteDoctorProfilePhoto($id)
     {
         try {
@@ -369,7 +350,8 @@ class DoctorController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function changePassword(Request $request, $id)
+    // administrator doctor password change
+    public function changeDoctorPassword(Request $request, $id)
     {
         try {
             $validation = new AdministratorValidation();
