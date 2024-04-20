@@ -14,7 +14,7 @@ class PatientSeeder extends Seeder
     public function run(): void
     {
         $patients = [
-            ['name' => 'KALPANA GHOSH', 'phone' => '01718851001', 'age' => 53, 'address' => 'LAXMIPASHA, LOHAGARA, NARAIL', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'KALPANA GHOSH', 'phone' => '01718851072', 'age' => 53, 'address' => 'LAXMIPASHA, LOHAGARA, NARAIL', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'KAUSHIK BISWAS', 'phone' => '01718851002', 'age' => 25, 'address' => 'LAXMIPASHA, LOHAGARA, NARAIL', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'MD RIYAD', 'phone' => '01718851003', 'age' => 23, 'address' => 'LAXMIPASHA, LOHAGARA, NARAIL', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'PRIYA ROY', 'phone' => '01718851004', 'age' => 43, 'address' => 'LAXMIPASHA, LOHAGARA, NARAIL', 'created_at' => now(), 'updated_at' => now()],
