@@ -56,6 +56,7 @@ Route::prefix('doctor')->group(function () {
 
         Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
         Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+        Route::get('/appointment/{id}', [AppointmentController::class, 'getAppointmentInfo']);
 
         Route::get('/prescription/patient-prescriptions/{id}', [PrescriptionController::class, 'patientWithPrescriptionData']);
         Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
@@ -137,6 +138,7 @@ Route::prefix('administrator')->group(function () {
 
         Route::get('/appointment/all', [AppointmentController::class, 'getAppointments']);
         Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+        // Route::get('/appointment/{id}', [AppointmentController::class, 'getAppointmentInfo']);
 
         Route::get('/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
     });

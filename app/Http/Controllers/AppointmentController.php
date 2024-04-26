@@ -6,6 +6,8 @@ use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\Serial;
 use App\Validations\AppointmentValidation;;
 
 use Illuminate\Http\Request;
@@ -216,6 +218,30 @@ class AppointmentController extends Controller
                 'status' => true,
                 'message' => 'status updated successfully!'
             ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function getAppointmentInfo($id)
+    {
+        try {
+            $aptInfo = Appointment::where('id', '=', $id)->first();
+            if ($aptInfo) {
+                $patient = Serial::where('id', '=', $aptInfo->serial_id)->first();
+
+
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'appointment get successfully!',
+                    'data' => $patient
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'appointment not found!',
+                ], 404);
+            }
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
