@@ -16,7 +16,8 @@ return new class extends Migration
             $table->bigInteger('doctor_id');
             $table->bigInteger('appointment_id');
             $table->bigInteger('patient_id');
-            $table->text('data');
+            $table->text('history');
+            $table->text('medication');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -58,7 +58,9 @@ Route::prefix('doctor')->group(function () {
         Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
         Route::get('/appointment/{id}', [AppointmentController::class, 'getAppointmentInfo']);
 
+
         Route::get('/prescription/patient-prescriptions/{id}', [PrescriptionController::class, 'patientWithPrescriptionData']);
+        Route::post('/prescription/save', [PrescriptionController::class, 'savePrescription']);
         Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
     });
 });
