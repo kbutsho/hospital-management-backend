@@ -41,6 +41,7 @@ class AppointmentController extends Controller
                 ->select(
                     'appointments.id',
                     'patients.name',
+                    'patients.id as patientId',
                     'patients.phone',
                     'patients.age',
                     'appointments.date',
@@ -66,6 +67,7 @@ class AppointmentController extends Controller
                         ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('departments.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('schedules.day', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('doctors_fees.fees', 'like', '%' . $searchTerm . '%');
                 });
             }
@@ -135,6 +137,7 @@ class AppointmentController extends Controller
                     'patients.name',
                     'patients.phone',
                     'patients.age',
+                    'patients.id as patientId',
                     'patients.gender',
                     'appointments.date',
                     'appointments.status',
@@ -151,6 +154,7 @@ class AppointmentController extends Controller
                     $q->where('appointments.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('patients.name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('patients.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.id', 'like', '%' . $searchTerm . '%')
                         ->orWhere('patients.age', 'like', '%' . $searchTerm . '%')
                         ->orWhere('patients.gender', 'like', '%' . $searchTerm . '%')
                         ->orWhere('appointments.date', 'like', '%' . $searchTerm . '%')

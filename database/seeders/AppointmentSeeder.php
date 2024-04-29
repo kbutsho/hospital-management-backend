@@ -13,8 +13,8 @@ class AppointmentSeeder extends Seeder
     public function run(): void
     {
         $appointments = [
-            ['serial_id' => 1, 'schedule_id' => 1, 'patient_id' => 1, 'serial_number' => 1, 'status' => 'paid', 'date' => date('2024-02-03'),  'created_at' => now(), 'updated_at' => now()],
-            ['serial_id' => 2, 'schedule_id' => 1, 'patient_id' => 2, 'serial_number' => 2, 'status' => 'paid', 'date' => date('2024-02-03'), 'created_at' => now(), 'updated_at' => now()],
+            ['serial_id' => 1, 'schedule_id' => 1, 'patient_id' => 1, 'serial_number' => 1, 'status' => 'closed', 'date' => date('2024-02-03'),  'created_at' => now(), 'updated_at' => now()],
+            ['serial_id' => 2, 'schedule_id' => 1, 'patient_id' => 2, 'serial_number' => 2, 'status' => 'closed', 'date' => date('2024-02-03'), 'created_at' => now(), 'updated_at' => now()],
             ['serial_id' => 3, 'schedule_id' => 1, 'patient_id' => 3, 'serial_number' => 3, 'status' => 'paid', 'date' => date('2024-02-03'), 'created_at' => now(), 'updated_at' => now()],
 
             ['serial_id' => 4, 'schedule_id' => 9, 'patient_id' => 4, 'serial_number' => 1, 'status' => 'paid', 'date' => date('2024-01-25'), 'created_at' => now(), 'updated_at' => now()],
