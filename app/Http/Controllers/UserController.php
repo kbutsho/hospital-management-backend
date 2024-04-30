@@ -354,37 +354,6 @@ class UserController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-    public function changePassword(Request $request)
-    {
-        try {
-            $validation = new AdministratorValidation();
-            $rules = $validation->updatePasswordRules;
-            $messages = $validation->updatePasswordMessages;
-            $validator = Validator::make($request->all(), $rules, $messages);
-            if ($validator->fails()) {
-                return ValidationHandler::handleValidation($validator);
-            }
-            $user = JWTAuth::parseToken()->authenticate();
-            if (Hash::check($request->old_password, $user->password)) {
-                $user->password = Hash::make($request->new_password);
-                $user->save();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'password change successfully!',
-                ], 200);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'wrong old password!',
-                    'error' => [
-                        'old_password' => 'old password not matched!'
-                    ]
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            return ExceptionHandler::handleException($e);
-        }
-    }
 
 
     // assistant
@@ -538,6 +507,40 @@ class UserController extends Controller
                 'message' => 'photo delete successfully!',
                 'data' => $assistant
             ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+
+    // change password to all
+    public function changePassword(Request $request)
+    {
+        try {
+            $validation = new AdministratorValidation();
+            $rules = $validation->updatePasswordRules;
+            $messages = $validation->updatePasswordMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $user = JWTAuth::parseToken()->authenticate();
+            if (Hash::check($request->old_password, $user->password)) {
+                $user->password = Hash::make($request->new_password);
+                $user->save();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'password change successfully!',
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'wrong old password!',
+                    'error' => [
+                        'old_password' => 'old password not matched!'
+                    ]
+                ], 422);
+            }
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
