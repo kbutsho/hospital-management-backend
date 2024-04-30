@@ -70,11 +70,6 @@ Route::prefix('doctor')->group(function () {
     });
 });
 
-Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT])->group(function () {
-    Route::post('/create-schedule', [ScheduleController::class, 'createSchedule']);
-    Route::post('/create-visiting-hour', [VisitingHourController::class, 'createVisitingHour']);
-});
-
 Route::prefix('administrator')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ADMINISTRATOR])->group(function () {
 
@@ -154,6 +149,25 @@ Route::prefix('administrator')->group(function () {
         Route::get('/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
     });
 });
+
+Route::prefix('assistant')->group(function () {
+    Route::middleware(['jwt.verify', 'role:' . ROLE::ASSISTANT])->group(function () {
+        // administrator profile
+        Route::get('/profile', [UserController::class, 'AssistantProfile']);
+        Route::post('/profile/update', [UserController::class, 'updateAssistantProfile']);
+        Route::post('/profile/photo/update', [UserController::class, 'updateAssistantProfilePhoto']);
+        Route::get('/profile/photo/delete', [UserController::class, 'deleteAssistantProfilePhoto']);
+        Route::post('/profile/change-password', [UserController::class, 'changePassword']);
+    });
+});
+
+
+Route::middleware(['jwt.verify', 'role:' . ROLE::DOCTOR . '|' . ROLE::ASSISTANT])->group(function () {
+    Route::post('/create-schedule', [ScheduleController::class, 'createSchedule']);
+    Route::post('/create-visiting-hour', [VisitingHourController::class, 'createVisitingHour']);
+});
+
+
 
 Route::post('/test/add', [TestController::class, 'create']);
 Route::get('/test/all', [TestController::class, 'get']);
