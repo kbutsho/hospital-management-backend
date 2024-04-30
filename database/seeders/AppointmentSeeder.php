@@ -34,6 +34,8 @@ class AppointmentSeeder extends Seeder
             // ['serial_id' => 15, 'schedule_id' => 24, 'patient_id' => 15, 'serial_number' => 6, 'status' => 'unpaid',  'created_at' => now(), 'updated_at' => now()],
 
             ['serial_id' => 16, 'schedule_id' => 24, 'patient_id' => 3, 'serial_number' => 5, 'status' => 'paid', 'date' => date('2024-01-26'), 'created_at' => now(), 'updated_at' => now()],
+            ['serial_id' => 17, 'schedule_id' => 1, 'patient_id' => 2, 'serial_number' => 4, 'status' => 'paid', 'date' => date('2024-04-06'), 'created_at' => now(), 'updated_at' => now()],
+            ['serial_id' => 18, 'schedule_id' => 9, 'patient_id' => 2, 'serial_number' => 3, 'status' => 'closed', 'date' => date('2024-01-25'), 'created_at' => now(), 'updated_at' => now()],
         ];
         Appointment::insert($appointments);
     }
