@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Helpers\ExceptionHandler;
 use App\Helpers\ValidationHandler;
 use App\Models\Administrator;
+use App\Models\Assistant;
 use App\Models\Doctor;
 use App\Models\User;
 use App\Validations\AdministratorValidation;
+use App\Validations\AssistantValidation;
 use App\Validations\DoctorValidation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -379,6 +381,163 @@ class UserController extends Controller
                     ]
                 ], 422);
             }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+
+    // assistant
+    public function AssistantProfile()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $assistant = Assistant::where('user_id', '=', $user->id)->first();
+            $userInfo = [
+                'name' => $assistant->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => $assistant->address,
+                'age' => $assistant->age,
+                'gender' => $assistant->gender,
+                'photo' => $assistant->photo,
+            ];
+            return response()->json([
+                'status' => true,
+                'message' => 'profile fetched successfully!',
+                'data' => $userInfo
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function updateAssistantProfile(Request $request)
+    {
+        try {
+            $validation = new AssistantValidation();
+            $rules = $validation->updateAssistantProfileRules;
+            $messages = $validation->updateAssistantProfileMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $auth_user = JWTAuth::parseToken()->authenticate();
+            $user = User::where('id', '=', $auth_user->id)->first();
+            $assistant = Assistant::where('user_id', '=', $user->id)->first();
+            if (
+                $request->email != $user->email && User::where('email', $request->email)->exists()
+                && $request->phone != $user->phone && User::where('phone', $request->phone)->exists()
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "email and phone already used",
+                    'error' => [
+                        'email' => "$request->email already used!",
+                        'phone' => "$request->phone already used!"
+                    ]
+                ], 422);
+            }
+            // Check if email already exists for other users
+            if ($request->email != $user->email && User::where('email', $request->email)->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "email already used",
+                    'error' => [
+                        'email' => "$request->email already used!",
+                    ]
+                ], 422);
+            }
+            // Check if phone number already exists for other users
+            if ($request->phone != $user->phone && User::where('phone', $request->phone)->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "phone already used!",
+                    'error' => [
+                        'phone' => "$request->phone already used!"
+                    ]
+                ], 422);
+            }
+
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $assistant->name = $request->name;
+            $assistant->age = $request->age;
+            $assistant->gender = $request->gender;
+            $assistant->address = $request->address;
+            $user->save();
+            $assistant->save();
+
+            $userInfo = [
+                'name' => $assistant->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'address' => $assistant->address,
+                'age' => $assistant->age,
+                'gender' => $assistant->gender,
+                'photo' => $assistant->photo,
+            ];
+            return response()->json([
+                'status' => true,
+                'message' => 'profile update successfully!',
+                'data' => $userInfo
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function updateAssistantProfilePhoto(Request $request)
+    {
+        try {
+            $validation = new AssistantValidation();
+            $rules = $validation->updateAssistantProfilePhotoRules;
+            $messages = $validation->updateAssistantProfilePhotoMessages;
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return ValidationHandler::handleValidation($validator);
+            }
+            $auth_user = JWTAuth::parseToken()->authenticate();
+            $assistant = Assistant::where('user_id', '=', $auth_user->id)->first();
+            if ($request->hasFile('photo')) {
+                if ($assistant->photo) {
+                    $previousPhotoPath = public_path('uploads/assistantProfile/' . $assistant->photo);
+                    if (file_exists($previousPhotoPath)) {
+                        unlink($previousPhotoPath);
+                    }
+                }
+                $photo = $request->file('photo');
+                $photoName = time() . '.' . $photo->getClientOriginalExtension();
+                $photo->move('uploads/assistantProfile/', $photoName);
+                $assistant->photo = $photoName;
+            }
+            $assistant->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'photo update successfully!',
+                'data' => $assistant
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    public function deleteAssistantProfilePhoto()
+    {
+        try {
+            $auth_user = JWTAuth::parseToken()->authenticate();
+            $assistant = Assistant::where('user_id', '=', $auth_user->id)->first();
+
+            if ($assistant->photo) {
+                $previousPhotoPath = public_path('uploads/assistantProfile/' . $assistant->photo);
+                if (file_exists($previousPhotoPath)) {
+                    unlink($previousPhotoPath);
+                }
+            }
+            $assistant->photo = null;
+            $assistant->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'photo delete successfully!',
+                'data' => $assistant
+            ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
