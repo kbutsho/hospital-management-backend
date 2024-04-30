@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('emergency_contact_name')->nullable();
             $table->string('emergency_contact_number')->nullable();
-            $table->bigInteger('blood_group_id')->nullable();
+            $table->string('emergency_contact_relation')->nullable();
+            $table->enum('blood_group', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

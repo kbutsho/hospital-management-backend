@@ -188,7 +188,7 @@ class AuthValidation
         //             'male', 'female', 'other'
         //         ])
         //     ],
-        //     'blood_group_id' => 'required|integer',
+        //     'blood_group' => 'required|integer',
         //     'address' => 'required|string|max:200',
         //     'emergency_contact_number' => 'required|min:11|max:14|regex:/^([0-9\s\-\+\(\)]*)$/',
         //     'emergency_contact_name' => 'required|min:3|max:40',
@@ -210,8 +210,8 @@ class AuthValidation
         //     'emergency_contact_number.max' => 'invalid phone number!',
         //     'age.required' => 'age is required!',
         //     'age.integer' => 'invalid age formate!',
-        //     'blood_group_id.required' => 'blood group is required!',
-        //     'blood_group_id.integer' => 'invalid blood group!',
+        //     'blood_group.required' => 'blood group is required!',
+        //     'blood_group.integer' => 'invalid blood group!',
         //     'gender.required' => 'gender is required!',
         //     'address.required' => 'address is required!',
         //     'address.string' => 'invalid address formate!',

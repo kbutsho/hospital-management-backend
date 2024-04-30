@@ -52,6 +52,7 @@ Route::prefix('doctor')->group(function () {
         Route::get('/patient/all', [PatientController::class, 'getDoctorsAllPatient']);
         Route::delete('/patient/{id}', [PatientController::class, 'deletePatient']);
         Route::get('/patient/{id}', [PatientController::class, 'getPatientDetails']);
+        Route::post('/patient/update/{id}', [PatientController::class, 'updatePatient']);
 
 
         Route::get('/chamber/all', [ChamberController::class, 'getDoctorsChamber']);
@@ -140,8 +141,11 @@ Route::prefix('administrator')->group(function () {
         Route::delete('/serial/{id}', [SerialController::class, 'deleteSerial']);
         Route::get('/serial/{id}/serial-number', [SerialController::class, 'getSerialNumber']);
 
+        // patient
         Route::get('/patient/all', [PatientController::class, 'getAllPatient']);
         Route::delete('/patient/{id}', [PatientController::class, 'deletePatient']);
+        Route::get('/patient/{id}', [PatientController::class, 'getAdminPatientDetails']);
+        Route::post('/patient/update/{id}', [PatientController::class, 'updatePatient']);
 
         Route::get('/appointment/all', [AppointmentController::class, 'getAppointments']);
         Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);

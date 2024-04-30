@@ -365,9 +365,10 @@ class AuthController extends Controller
             $patient->name = strtoupper($request->name);
             $patient->address = strtoupper($request->address);
             $patient->age = intval($request->age);
-            $patient->blood_group_id = intval($request->blood_group_id);
+            $patient->blood_group = intval($request->blood_group);
             $patient->emergency_contact_name = $request->emergency_contact_name;
             $patient->emergency_contact_number = $request->emergency_contact_number;
+            $patient->emergency_contact_relation = $request->emergency_contact_relation;
             $patient->gender = $request->gender;
             $patient->save();
             $patientData = [
@@ -380,6 +381,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'emergency_contact_name' => $patient->emergency_contact_name,
                 'emergency_contact_number' => $patient->emergency_contact_number,
+                'emergency_contact_relation' => $patient->emergency_contact_relation,
             ];
             return response()->json([
                 'status' => true,
@@ -414,21 +416,25 @@ class AuthController extends Controller
                 $user = Auth::user();
                 if ($user->status === STATUS::ACTIVE) {
                     $name = '';
+                    $photo = '';
                     $role = $user->role;
                     if ($role === ROLE::ADMINISTRATOR) {
                         $admin = Administrator::where('user_id', $user->id)->first();
                         if ($admin) {
                             $name = $admin->name;
+                            $photo = $admin->photo;
                         }
                     } else if ($role === ROLE::DOCTOR) {
                         $doctor = Doctor::where('user_id', $user->id)->first();
                         if ($doctor) {
                             $name = $doctor->name;
+                            $photo = $doctor->photo;
                         }
                     } else if ($role === ROLE::ASSISTANT) {
                         $assistant = Assistant::where('user_id', $user->id)->first();
                         if ($assistant) {
                             $name = $assistant->name;
+                            $photo = $assistant->photo;
                         }
                     } else {
                         // Handle unknown role
@@ -443,7 +449,8 @@ class AuthController extends Controller
                         'message' => 'login successful!',
                         'name' => $name,
                         'role' => $role,
-                        'token' => $token
+                        'token' => $token,
+                        'photo' => $photo
                     ], 200);
                 }
                 // user not active
