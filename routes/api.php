@@ -158,6 +158,14 @@ Route::prefix('assistant')->group(function () {
         Route::post('/profile/photo/update', [UserController::class, 'updateAssistantProfilePhoto']);
         Route::get('/profile/photo/delete', [UserController::class, 'deleteAssistantProfilePhoto']);
         Route::post('/profile/change-password', [UserController::class, 'changePassword']);
+
+
+        // serial
+        Route::get('/serial/all', [SerialController::class, 'getAssistantSerials']);
+        Route::post('/serial/update/status', [SerialController::class, 'updateSerialStatus']);
+        Route::delete('/serial/{id}', [SerialController::class, 'deleteSerial']);
+        Route::get('/serial/{id}/serial-number', [SerialController::class, 'getSerialNumber']);
+        Route::get('/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
     });
 });
 

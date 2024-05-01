@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AssistantUnderDoctor;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PatientSeeder::class);
         $this->call(AssistantSeeder::class);
         $this->call(AssignedAssistantSeeder::class);
+        $this->call(AssistantUnderDoctorSeeder::class);
         $this->call(PrescriptionSeeder::class);
         $this->call(SettingSeeder::class);
     }

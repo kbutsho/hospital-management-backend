@@ -6,6 +6,8 @@ use App\Helpers\ExceptionHandler;
 use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
 use App\Models\Appointment;
+use App\Models\Assistant;
+use App\Models\AssistantUnderDoctor;
 use App\Models\Department;
 use App\Models\Doctor;
 use App\Models\DoctorsFee;
@@ -16,6 +18,7 @@ use App\Validations\SerialValidation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SerialController extends Controller
 {
@@ -220,6 +223,7 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator, assistant
     public function updateSerialStatus(Request $request)
     {
         try {
@@ -285,7 +289,7 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
+    // administrator, assistant
     public function DoctorDepartmentAndScheduleList()
     {
         try {
@@ -320,6 +324,7 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator, assistant
     public function deleteSerial($id)
     {
         try {
@@ -333,6 +338,7 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
+    // administrator, assistant
     public function getSerialNumber($id)
     {
         try {
@@ -342,6 +348,103 @@ class SerialController extends Controller
                 'message' => 'serial found successfully!',
                 'serialNumber' => $appointment->serial_number,
                 'patientId' =>   $appointment->patient_id
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+
+
+    // assistant
+    public function getAssistantSerials(Request $request)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $assistant_id = Assistant::where('user_id', $user->id)->value('id');
+            $doctor_id = AssistantUnderDoctor::where('assistant_id', $assistant_id)->value('doctor_id');
+
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $statusFilter = $request->query('status');
+            $doctorFilter = $request->query('doctor');
+            $departmentFilter = $request->query('department');
+            $dateFilter = $request->query('date');
+            $timeSlotFilter = $request->query('schedule');
+            $sortOrder = $request->query('sortOrder', 'desc');
+            $sortBy = $request->query('sortBy', 'serials.id');
+
+            $query = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
+                ->join('departments', 'serials.department_id', 'departments.id')
+                ->join('schedules', 'serials.schedule_id', 'schedules.id')
+                ->join('chambers', 'schedules.chamber_id', 'chambers.id')
+                ->join('doctors_fees', 'serials.doctor_id', 'doctors_fees.doctor_id')
+                ->where('serials.doctor_id', $doctor_id)
+                ->select(
+                    'serials.id',
+                    'serials.name',
+                    'serials.phone',
+                    'serials.age',
+                    'serials.date',
+                    'serials.payment_status',
+                    'doctors.id as doctorId',
+                    'doctors.name as doctorName',
+                    'departments.id as departmentId',
+                    'departments.name as departmentName',
+                    'schedules.opening_time',
+                    'schedules.day',
+                    'doctors_fees.fees',
+                    'chambers.room as roomNumber'
+                )->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('serials.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.age', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.date', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('serials.payment_status', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('departments.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('schedules.day', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('doctors_fees.fees', 'like', '%' . $searchTerm . '%');
+                });
+            }
+
+            if ($statusFilter) {
+                $query->whereRaw('LOWER(serials.payment_status) = ?', strtolower($statusFilter));
+            }
+            if ($doctorFilter) {
+                $query->whereRaw('LOWER(doctors.id) = ?', strtolower($doctorFilter));
+            }
+            if ($departmentFilter) {
+                $query->whereRaw('LOWER(departments.id) = ?', strtolower($departmentFilter));
+            }
+            if ($dateFilter) {
+                $formattedDate = date('Y-m-d', strtotime($dateFilter));
+                $query->whereDate('serials.date', '=', $formattedDate);
+            }
+            if ($timeSlotFilter) {
+                if (preg_match('/(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/', $timeSlotFilter, $matches)) {
+                    $startTime = $matches[1];
+                    $endTime = $matches[2];
+                    $query->where(function ($q) use ($startTime, $endTime) {
+                        $q->where('schedules.opening_time', '=', $startTime)
+                            ->where('schedules.closing_time', '=', $endTime);
+                    });
+                }
+            }
+
+            $paginationData = $query->paginate($perPage);
+            $total = Serial::count();
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
