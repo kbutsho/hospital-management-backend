@@ -33,6 +33,8 @@ Route::get('/doctor/info/{id}', [DoctorController::class, 'getDoctorInfo']);
 Route::get('/assistant/info/{id}', [AssistantController::class, 'getAssistantInfo']);
 Route::get('/department/info/{id}', [DepartmentController::class, 'getDepartmentInfo']);
 Route::get('/room/all', [ChamberController::class, 'getAllActiveRoom']);
+Route::get('/serial/search', [SerialController::class, 'getPublicSerialList']);
+Route::get('/serial/{id}/serial-number', [SerialController::class, 'getSerialNumber']);
 Route::get('/schedule/doctor-chamber', [ScheduleController::class, 'getDoctorAndChamberForCreateSchedule']);
 Route::get('/serial/department-doctor-schedule', [ScheduleController::class, 'getDepartmentsDoctorsAndSchedulesForSerial']);
 Route::get('/patient/{phone}', [PatientController::class, 'getPatientByPhone']);

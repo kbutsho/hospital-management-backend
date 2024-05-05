@@ -7,9 +7,11 @@ class SerialValidation
     public $createSerialRules;
     public $createSerialMessages;
 
+    public $searchSerialRules;
+    public $searchSerialMessages;
+
     public $updateSerialStatusRules;
     public $updateSerialStatusMessages;
-
 
     public function __construct()
     {
@@ -43,6 +45,13 @@ class SerialValidation
         $this->updateSerialStatusMessages = [
             'payment_status.required' => 'payment status is required!',
             'id.required' => 'department id is required!',
+        ];
+
+        $this->searchSerialRules = [
+            'searchTerm' => 'required',
+        ];
+        $this->searchSerialMessages = [
+            'searchTerm.required' => 'serial id, name or phone number is required!',
         ];
     }
 }

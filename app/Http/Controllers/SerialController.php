@@ -353,9 +353,6 @@ class SerialController extends Controller
             return ExceptionHandler::handleException($e);
         }
     }
-
-
-
     // assistant
     public function getAssistantSerials(Request $request)
     {
@@ -445,6 +442,59 @@ class SerialController extends Controller
                 'currentPage' => $paginationData->currentPage(),
                 'totalItems' => $total,
                 'data' => $paginationData->items()
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+
+    //public
+    public function getPublicSerialList(Request $request)
+    {
+        try {
+            $searchTerm = $request->query('searchTerm');
+            $sortOrder = $request->query('sortOrder', 'desc');
+            $sortBy = $request->query('sortBy', 'serials.id');
+
+            $query = Serial::join('doctors', 'serials.doctor_id', '=', 'doctors.id')
+                ->join('departments', 'serials.department_id', 'departments.id')
+                ->join('schedules', 'serials.schedule_id', 'schedules.id')
+                ->join('chambers', 'schedules.chamber_id', 'chambers.id')
+                ->join('doctors_fees', 'serials.doctor_id', 'doctors_fees.doctor_id')
+                ->select(
+                    'serials.id',
+                    'serials.name',
+                    'serials.phone',
+                    'serials.age',
+                    'serials.date',
+                    'serials.payment_status',
+                    'doctors.id as doctorId',
+                    'doctors.name as doctorName',
+                    'departments.id as departmentId',
+                    'departments.name as departmentName',
+                    'schedules.opening_time',
+                    'schedules.day',
+                    'doctors_fees.fees',
+                    'chambers.room as roomNumber'
+                )->orderBy($sortBy, $sortOrder);
+
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('serials.id', '=', $searchTerm)
+                        ->orWhere('serials.name', '=', $searchTerm)
+                        ->orWhere('serials.phone', '=', $searchTerm);
+                });
+            } else {
+                return response()->json([
+                    'status' => true,
+                    'data' => [],
+                ], 200);
+            }
+            $serials = $query->get();
+            return response()->json([
+                'status' => true,
+                'data' => $serials,
+                'searchTerm' => $searchTerm
             ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
