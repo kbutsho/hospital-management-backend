@@ -59,11 +59,11 @@ Route::prefix('doctor')->group(function () {
         Route::delete('/chamber/{id}', [ChamberController::class, 'deleteChamber']);
         Route::patch('/chamber/{id}', [ChamberController::class, 'updateChamber']);
 
+        // appointment
         Route::get('/appointment/all', [AppointmentController::class, 'getDoctorAppointments']);
-        Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
         Route::get('/appointment/{id}', [AppointmentController::class, 'getAppointmentInfo']);
 
-
+        // prescription
         Route::get('/prescription/patient-prescriptions/{id}', [PrescriptionController::class, 'patientWithPrescriptionData']);
         Route::post('/prescription/save', [PrescriptionController::class, 'savePrescription']);
         Route::get('/schedule/all', [ScheduleController::class, 'doctorsSchedule']);
@@ -152,6 +152,7 @@ Route::prefix('administrator')->group(function () {
 
 Route::prefix('assistant')->group(function () {
     Route::middleware(['jwt.verify', 'role:' . ROLE::ASSISTANT])->group(function () {
+
         // administrator profile
         Route::get('/profile', [UserController::class, 'AssistantProfile']);
         Route::post('/profile/update', [UserController::class, 'updateAssistantProfile']);
@@ -159,6 +160,11 @@ Route::prefix('assistant')->group(function () {
         Route::get('/profile/photo/delete', [UserController::class, 'deleteAssistantProfilePhoto']);
         Route::post('/profile/change-password', [UserController::class, 'changePassword']);
 
+        // patient
+        Route::get('/patient/all', [PatientController::class, 'getAssistantsAllPatient']);
+        Route::delete('/patient/{id}', [PatientController::class, 'deletePatient']);
+        Route::get('/patient/{id}', [PatientController::class, 'getPatientDetails']);
+        Route::post('/patient/update/{id}', [PatientController::class, 'updatePatient']);
 
         // serial
         Route::get('/serial/all', [SerialController::class, 'getAssistantSerials']);
@@ -166,6 +172,14 @@ Route::prefix('assistant')->group(function () {
         Route::delete('/serial/{id}', [SerialController::class, 'deleteSerial']);
         Route::get('/serial/{id}/serial-number', [SerialController::class, 'getSerialNumber']);
         Route::get('/doctor-department-schedule', [SerialController::class, 'DoctorDepartmentAndScheduleList']);
+
+        // appointment
+        Route::get('/appointment/all', [AppointmentController::class, 'getAssistantAppointment']);
+        Route::post('/appointment/update/status', [AppointmentController::class, 'updateAppointmentStatus']);
+        Route::get('/appointment/{id}', [AppointmentController::class, 'getAppointmentInfo']);
+
+        // schedule
+        Route::get('/schedule/all', [ScheduleController::class, 'assistantsSchedule']);
     });
 });
 

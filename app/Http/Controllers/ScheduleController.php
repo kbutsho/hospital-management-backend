@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Helpers\ExceptionHandler;
 use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
+use App\Models\Assistant;
+use App\Models\AssistantUnderDoctor;
 use App\Models\Chamber;
 use App\Models\Department;
 use App\Models\Doctor;
@@ -389,6 +391,39 @@ class ScheduleController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'serial created successfully!',
+                'data' => [
+                    'schedule' => $formattedTimeSlots
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // each assistant own schedule
+    public function assistantsSchedule()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $assistantId = Assistant::where('user_id', $user->id)->value('id');
+            $doctorId = AssistantUnderDoctor::where('assistant_id', $assistantId)->value('doctor_id');
+
+            $schedules = Schedule::where('doctor_id', $doctorId)->get();
+            $timeSlots = [];
+            foreach ($schedules as $schedule) {
+                $openingTime = $schedule->opening_time;
+                $closingTime = $schedule->closing_time;
+                $timeSlot = $openingTime . ' - ' . $closingTime;
+                $timeSlots[] = $timeSlot;
+            }
+            sort($timeSlots);
+            $uniqueTimeSlots = array_unique($timeSlots);
+            $formattedTimeSlots = [];
+            foreach ($uniqueTimeSlots as $slot) {
+                $formattedTimeSlots[] = ['time' => $slot];
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'serial get successfully!',
                 'data' => [
                     'schedule' => $formattedTimeSlots
                 ]

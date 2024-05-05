@@ -8,6 +8,8 @@ use App\Helpers\ExceptionHandler;
 use App\Helpers\ROLE;
 use App\Helpers\STATUS;
 use App\Helpers\ValidationHandler;
+use App\Models\Assistant;
+use App\Models\AssistantUnderDoctor;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Prescription;
@@ -273,6 +275,64 @@ class PatientController extends Controller
                     'message' => 'patient not found!'
                 ], 404);
             }
+        } catch (\Exception $e) {
+            return ExceptionHandler::handleException($e);
+        }
+    }
+    // assistant
+    public function getAssistantsAllPatient(Request $request)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $assistant_id = Assistant::where('user_id', $user->id)->value('id');
+            $doctorId = AssistantUnderDoctor::where('assistant_id', $assistant_id)->value('doctor_id');
+
+            $my_prescriptions = Prescription::where('doctor_id', $doctorId)->get();
+            $uniquePatientIds = $my_prescriptions->unique('patient_id')->pluck('patient_id')->toArray();
+
+            $perPage = $request->query('perPage') ?: 10;
+            $searchTerm = $request->query('searchTerm');
+            $sortOrder = $request->query('sortOrder', 'desc');
+            $sortBy = $request->query('sortBy', 'patients.id');
+            $query = Patient::whereIn('id', $uniquePatientIds)->select(
+                'id',
+                'name',
+                'age',
+                'address',
+                'gender',
+                'phone',
+                'email',
+                'emergency_contact_number',
+                'emergency_contact_name',
+                'emergency_contact_relation',
+                'blood_group'
+            )->orderBy($sortBy, $sortOrder);
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('patients.id', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.age', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.address', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.phone', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.gender', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.emergency_contact_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.emergency_contact_number', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.emergency_contact_relation', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('patients.blood_group', 'like', '%' . $searchTerm . '%');
+                });
+            }
+            $paginationData = $query->paginate($perPage);
+            $total = Patient::count();
+
+            return response()->json([
+                'status' => true,
+                'message' => count($paginationData->items()) . " items fetched successfully!",
+                'fetchedItems' => $paginationData->total(),
+                'currentPage' => $paginationData->currentPage(),
+                'totalItems' => $total,
+                'data' => $paginationData->items()
+            ], 200);
         } catch (\Exception $e) {
             return ExceptionHandler::handleException($e);
         }
