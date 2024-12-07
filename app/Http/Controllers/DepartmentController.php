@@ -79,7 +79,7 @@ class DepartmentController extends Controller
                     'status' => true,
                     'message' => 'doctor info get successfully!',
                     'data' => ['department' => $department, 'doctor' => $doctors]
-                ], 200);
+                ], 200); // update
             } else {
                 return response()->json([
                     'status' => false,
